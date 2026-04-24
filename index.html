@@ -64,7 +64,7 @@
             transform: translateY(-2px);
         }
 
-        /* 🔮 The Vedika Live Orb (Large, Orange + White) */
+        /* 🔮 The ChatGPT Style Sharp Fluid Orb */
         .orb-container {
             position: relative;
             width: 300px;
@@ -75,46 +75,81 @@
             margin: 0 auto;
         }
 
-        .orb {
-            /* Increased base size */
-            width: 170px;
-            height: 170px;
+        /* Sharp edges container */
+        .orb-wrapper {
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
-            /* Orange and White Gradient */
-            background: linear-gradient(135deg, #ff7e00, #ffffff, #ffb347);
-            filter: blur(12px);
-            opacity: 0.8;
-            /* Using transform for JS reactive scaling */
-            transition: transform 0.1s ease-out, background 0.5s ease;
-            box-shadow: 0 0 40px rgba(255, 126, 0, 0.4), inset 0 0 20px rgba(255,255,255,0.8);
+            position: relative;
+            /* This hides the inner blur, making the edge perfectly sharp and clear */
+            overflow: hidden; 
+            box-shadow: 0 0 40px rgba(255, 126, 0, 0.3);
+            transition: transform 0.1s ease-out, box-shadow 0.4s ease;
             will-change: transform;
+            /* Force hardware mask for iOS Safari */
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
         }
 
-        /* State: Processing (Thinking) */
-        .orb.processing {
-            background: linear-gradient(135deg, #ff9500, #ffcc00);
-            opacity: 0.9;
+        /* The fluid colors inside that meet but don't mix completely */
+        .orb-fluid {
+            position: absolute;
+            top: -50%; 
+            left: -50%;
+            width: 200%; 
+            height: 200%;
+            background: conic-gradient(from 0deg, #ff7e00 0%, #ffffff 25%, #ffb347 50%, #ffffff 75%, #ff7e00 100%);
+            /* Slight internal blur to soften the gradient lines without affecting the sharp outer edge */
             filter: blur(15px);
-            animation: spin-pulse 2s infinite linear;
+            animation: spin-slow 8s linear infinite;
         }
 
-        /* State: Speaking (Vedika Speaking) */
-        .orb.speaking {
-            background: linear-gradient(135deg, #ff8c00, #ffffff);
-            opacity: 1;
-            filter: blur(10px);
-            animation: ripple-speak 1.5s infinite;
+        /* Inner shadow for 3D sphere depth */
+        .orb-overlay {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.4);
+            pointer-events: none;
         }
 
-        @keyframes spin-pulse {
-            0% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.1) rotate(180deg); }
-            100% { transform: scale(1) rotate(360deg); }
+        /* Ripple Effect when speaking */
+        .orb-ripple {
+            position: absolute;
+            width: 180px; 
+            height: 180px;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            opacity: 0;
+            pointer-events: none;
         }
-        @keyframes ripple-speak {
-            0% { box-shadow: 0 0 0 0 rgba(255, 140, 0, 0.6); transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { box-shadow: 0 0 0 50px rgba(255, 140, 0, 0); transform: scale(1); }
+
+        /* ---------------- Orb States ---------------- */
+        
+        /* Processing / Analyzing (Fast Spin) */
+        .orb-wrapper.processing .orb-fluid {
+            animation: spin-fast 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            background: conic-gradient(from 0deg, #ff8c00 0%, #ffffff 30%, #ff6600 60%, #ffffff 80%, #ff8c00 100%);
+        }
+
+        /* Speaking State (Glowing and Rippling) */
+        .orb-wrapper.speaking {
+            box-shadow: 0 0 60px rgba(255, 255, 255, 0.5);
+        }
+        .orb-wrapper.speaking ~ .orb-ripple {
+            animation: ripple-out 1.5s infinite ease-out;
+        }
+
+        @keyframes spin-slow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes spin-fast {
+            0% { transform: rotate(0deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1.1); }
+        }
+        @keyframes ripple-out {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(1.5); opacity: 0; }
         }
 
         /* 📜 Subtitles Container */
@@ -240,9 +275,14 @@
     <!-- 💬 Main Visual Area -->
     <main class="flex-1 flex flex-col justify-center items-center z-10 relative w-full h-full">
         
-        <!-- The Dynamic Large Orange Orb -->
+        <!-- The Dynamic Sharp & Fluid Orb -->
         <div class="orb-container">
-            <div id="vedika-orb" class="orb"></div>
+            <div id="vedika-orb" class="orb-wrapper">
+                <div class="orb-fluid"></div>
+                <div class="orb-overlay"></div>
+            </div>
+            <!-- Ripple Effect layer outside the sharp orb -->
+            <div id="vedika-ripple" class="orb-ripple"></div>
         </div>
         
         <div id="orb-status" class="mt-12 text-xs uppercase tracking-[0.4em] text-gray-500 font-bold transition-all">Standby</div>
@@ -258,7 +298,7 @@
 
     <!-- 🎮 Center Control (Standby) -->
     <div id="standby-controls" class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-        <button id="go-live-btn" class="btn-premium pointer-events-auto mt-52">
+        <button id="go-live-btn" class="btn-premium pointer-events-auto mt-64">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
             Go Live
         </button>
@@ -282,7 +322,7 @@
 
         const welcomeScreen = document.getElementById('welcome-screen');
         const startNowBtn = document.getElementById('start-now-btn');
-        const orb = document.getElementById('vedika-orb');
+        const orbWrapper = document.getElementById('vedika-orb');
         const orbStatus = document.getElementById('orb-status');
         
         const standbyControls = document.getElementById('standby-controls');
@@ -320,16 +360,18 @@
             }, 800);
         });
 
-        // Background / Tab Switch Protection (Bug Fix)
+        // 🛡️ SECURITY BUG FIX: Pause session and mute audio if user leaves the tab
         document.addEventListener("visibilitychange", () => {
             if (document.hidden) {
-                // User left the website tab
+                // If audio is playing, stop it immediately
                 if (!audioPlayer.paused) {
-                    audioPlayer.pause(); // Stop voice immediately
+                    audioPlayer.pause();
+                    audioPlayer.currentTime = 0;
                 }
-                // Automatically pause the live session to prevent background recording
+                // Auto-pause the session to prevent background microphone access
                 if (isLiveActive && !isPaused) {
                     pauseLiveBtn.click();
+                    updateSubtitle("Session auto-paused for background privacy.", "System:");
                 }
             }
         });
@@ -389,9 +431,9 @@
 
                 scriptProcessor.onaudioprocess = function() {
                     if (isPaused || isVedikaSpeaking || !isLiveActive) {
-                        // Reset orb scale when not listening
-                        if (!isVedikaSpeaking && !orb.className.includes('processing')) {
-                            orb.style.transform = `scale(1)`;
+                        // Reset orb scale naturally
+                        if (!isVedikaSpeaking && !orbWrapper.className.includes('processing')) {
+                            orbWrapper.style.transform = `scale(1)`;
                         }
                         return;
                     }
@@ -402,22 +444,20 @@
                     for (let i = 0; i < array.length; i++) { values += array[i]; }
                     const averageVolume = values / array.length;
 
-                    // Dynamic Voice Movement (Scaling Orb based on volume)
+                    // 💥 Dynamic Orb Pumping when user speaks
                     if (isUserSpeaking) {
-                        // Math logic to make it pulse smoothly based on voice intensity
-                        const scale = 1 + (averageVolume / 100); 
-                        orb.style.transform = `scale(${Math.min(scale, 1.5)})`; // Max scale 1.5
+                        const scale = 1 + (averageVolume / 120); 
+                        orbWrapper.style.transform = `scale(${Math.min(scale, 1.4)})`; 
                     }
 
-                    // Volume threshold to detect start of speech
+                    // Start recording threshold
                     if (averageVolume > 15) {
                         if (!isUserSpeaking) {
                             isUserSpeaking = true;
                             audioChunks = [];
                             mediaRecorder.start();
                             
-                            // Remove static animation, we use JS transform now
-                            orb.className = "orb"; 
+                            orbWrapper.className = "orb-wrapper"; 
                             orbStatus.innerText = "Listening...";
                             updateSubtitle("...", "You:");
                         }
@@ -434,11 +474,13 @@
         function handleSilence() {
             if (isUserSpeaking && !isVedikaSpeaking && !isPaused && isLiveActive) {
                 isUserSpeaking = false;
-                orb.style.transform = `scale(1)`; // Reset size
-                orb.className = "orb processing";
+                orbWrapper.style.transform = `scale(1)`; 
+                
+                // 🌀 High-speed spinning state applied here
+                orbWrapper.className = "orb-wrapper processing";
                 orbStatus.innerText = "Processing...";
                 
-                // Requested Text Update
+                // Request fulfilled: "Analyzing the command..."
                 updateSubtitle("Analyzing the command...", "System:");
                 
                 mediaRecorder.stop();
@@ -476,7 +518,7 @@
                         }
 
                         if (audioResult) {
-                            orb.className = "orb speaking";
+                            orbWrapper.className = "orb-wrapper speaking";
                             orbStatus.innerText = "Speaking...";
                             
                             audioPlayer.src = audioResult.url || audioResult;
@@ -485,8 +527,8 @@
                             audioPlayer.onended = () => {
                                 if (isLiveActive && !isPaused) {
                                     isVedikaSpeaking = false;
-                                    orb.className = "orb";
-                                    orb.style.transform = `scale(1)`;
+                                    orbWrapper.className = "orb-wrapper";
+                                    orbWrapper.style.transform = `scale(1)`;
                                     orbStatus.innerText = "Active";
                                     updateSubtitle("Waiting for voice input...");
                                 }
@@ -498,7 +540,7 @@
                 console.error(error);
                 orbStatus.innerText = "Error";
                 isVedikaSpeaking = false;
-                orb.className = "orb";
+                orbWrapper.className = "orb-wrapper";
                 updateSubtitle("Connection error occurred.", "System:");
             }
         }
@@ -512,7 +554,7 @@
             standbyControls.classList.add('hidden-force');
             liveControls.classList.remove('hidden-force');
             
-            orb.className = "orb";
+            orbWrapper.className = "orb-wrapper";
             orbStatus.innerText = "Active";
             updateSubtitle("Live session started. Start speaking...");
             
@@ -524,8 +566,8 @@
             if (isPaused) {
                 pauseLiveBtn.classList.add('active-pause');
                 pauseLiveBtn.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
-                orb.className = "orb";
-                orb.style.transform = `scale(1)`;
+                orbWrapper.className = "orb-wrapper";
+                orbWrapper.style.transform = `scale(1)`;
                 orbStatus.innerText = "Paused";
                 audioPlayer.pause();
                 updateSubtitle("Session paused. Press play to resume.", "System:");
@@ -546,8 +588,8 @@
             liveControls.classList.add('hidden-force');
             standbyControls.classList.remove('hidden-force');
             
-            orb.className = "orb";
-            orb.style.transform = `scale(1)`;
+            orbWrapper.className = "orb-wrapper";
+            orbWrapper.style.transform = `scale(1)`;
             orbStatus.innerText = "Standby";
             updateSubtitle("Session ended.", "System:");
             
