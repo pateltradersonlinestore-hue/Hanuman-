@@ -3,215 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vedika Live - Continuous AI</title>
+    <title>Vedika Live - High Speed AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* 🍎 Premium Apple Glassmorphism & Dark Aesthetic */
         body {
             background-color: #000000;
             color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
             margin: 0;
             height: 100vh;
             overflow: hidden;
-            /* Subtle dual-color shade: Deep Navy to dark Teal */
             background: radial-gradient(circle at top left, rgba(20, 25, 45, 0.4), transparent 50%),
-                        radial-gradient(circle at bottom right, rgba(0, 30, 40, 0.4), transparent 50%),
-                        #000000;
+                        radial-gradient(circle at bottom right, rgba(0, 30, 40, 0.4), transparent 50%), #000000;
         }
 
-        .glow-text-white {
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 0 0 25px rgba(255, 255, 255, 0.3);
-        }
+        .glow-text-white { text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 0 0 25px rgba(255, 255, 255, 0.3); }
 
-        /* 🚪 Welcome Screen */
         #welcome-screen {
-            position: fixed;
-            inset: 0;
-            background: #000000;
+            position: fixed; inset: 0;
             background: radial-gradient(circle at center, #111 0%, #000 100%);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            z-index: 9999; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
             transition: opacity 0.8s ease, visibility 0.8s;
         }
 
         .btn-premium {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            padding: 14px 36px;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff; padding: 14px 36px; border-radius: 50px;
+            font-size: 1rem; font-weight: 600; cursor: pointer;
+            transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1.5px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
             backdrop-filter: blur(10px);
         }
-
         .btn-premium:hover {
-            background: rgba(255, 255, 255, 0.9);
-            color: #000000;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.9); color: #000000;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4); transform: translateY(-2px);
         }
 
         /* 🔮 The ChatGPT Style Sharp Fluid Orb */
-        .orb-container {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto;
-        }
-
-        /* Sharp edges container */
+        .orb-container { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; margin: 0 auto; }
         .orb-wrapper {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            position: relative;
-            /* This hides the inner blur, making the edge perfectly sharp and clear */
-            overflow: hidden; 
+            width: 180px; height: 180px; border-radius: 50%; position: relative; overflow: hidden; 
             box-shadow: 0 0 40px rgba(255, 126, 0, 0.3);
-            transition: transform 0.1s ease-out, box-shadow 0.4s ease;
-            will-change: transform;
-            /* Force hardware mask for iOS Safari */
+            transition: transform 0.1s ease-out, box-shadow 0.4s ease; will-change: transform;
             -webkit-mask-image: -webkit-radial-gradient(white, black);
         }
-
-        /* The fluid colors inside that meet but don't mix completely */
         .orb-fluid {
-            position: absolute;
-            top: -50%; 
-            left: -50%;
-            width: 200%; 
-            height: 200%;
+            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
             background: conic-gradient(from 0deg, #ff7e00 0%, #ffffff 25%, #ffb347 50%, #ffffff 75%, #ff7e00 100%);
-            /* Slight internal blur to soften the gradient lines without affecting the sharp outer edge */
-            filter: blur(15px);
-            animation: spin-slow 8s linear infinite;
+            filter: blur(15px); animation: spin-slow 8s linear infinite;
         }
+        .orb-overlay { position: absolute; inset: 0; border-radius: 50%; box-shadow: inset 0 0 25px rgba(0,0,0,0.4); pointer-events: none; }
+        .orb-ripple { position: absolute; width: 180px; height: 180px; border-radius: 50%; border: 2px solid #ffffff; opacity: 0; pointer-events: none; }
 
-        /* Inner shadow for 3D sphere depth */
-        .orb-overlay {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            box-shadow: inset 0 0 25px rgba(0,0,0,0.4);
-            pointer-events: none;
-        }
-
-        /* Ripple Effect when speaking */
-        .orb-ripple {
-            position: absolute;
-            width: 180px; 
-            height: 180px;
-            border-radius: 50%;
-            border: 2px solid #ffffff;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        /* ---------------- Orb States ---------------- */
-        
-        /* Processing / Analyzing (Fast Spin) */
         .orb-wrapper.processing .orb-fluid {
             animation: spin-fast 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
             background: conic-gradient(from 0deg, #ff8c00 0%, #ffffff 30%, #ff6600 60%, #ffffff 80%, #ff8c00 100%);
         }
+        .orb-wrapper.speaking { box-shadow: 0 0 60px rgba(255, 255, 255, 0.5); }
+        .orb-wrapper.speaking ~ .orb-ripple { animation: ripple-out 1.5s infinite ease-out; }
 
-        /* Speaking State (Glowing and Rippling) */
-        .orb-wrapper.speaking {
-            box-shadow: 0 0 60px rgba(255, 255, 255, 0.5);
-        }
-        .orb-wrapper.speaking ~ .orb-ripple {
-            animation: ripple-out 1.5s infinite ease-out;
-        }
+        @keyframes spin-slow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin-fast { 0% { transform: rotate(0deg) scale(1.1); } 100% { transform: rotate(360deg) scale(1.1); } }
+        @keyframes ripple-out { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } }
 
-        @keyframes spin-slow {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        @keyframes spin-fast {
-            0% { transform: rotate(0deg) scale(1.1); }
-            100% { transform: rotate(360deg) scale(1.1); }
-        }
-        @keyframes ripple-out {
-            0% { transform: scale(1); opacity: 0.6; }
-            100% { transform: scale(1.5); opacity: 0; }
-        }
-
-        /* 📜 Subtitles Container */
         .subtitles-wrapper {
-            position: absolute;
-            bottom: 120px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 650px;
-            text-align: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.4s ease;
-            z-index: 20;
+            position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 650px; text-align: center; opacity: 0; visibility: hidden; transition: all 0.4s ease; z-index: 20;
         }
-
-        .subtitles-wrapper.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
+        .subtitles-wrapper.visible { opacity: 1; visibility: visible; }
         .subtitle-text {
-            background: rgba(20, 20, 20, 0.7);
-            padding: 18px 28px;
-            border-radius: 24px;
-            backdrop-filter: blur(15px);
-            font-size: 1.15rem;
-            line-height: 1.6;
-            color: #f5f5f7;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: rgba(20, 20, 20, 0.7); padding: 18px 28px; border-radius: 24px;
+            backdrop-filter: blur(15px); font-size: 1.15rem; line-height: 1.6; color: #f5f5f7; border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* 🎮 Bottom Controls */
         .controls-bar {
-            position: fixed;
-            bottom: 35px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 20px;
-            z-index: 30;
-            background: rgba(30, 30, 35, 0.7);
-            padding: 12px 24px;
-            border-radius: 50px;
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; z-index: 30;
+            background: rgba(30, 30, 35, 0.7); padding: 12px 24px; border-radius: 50px;
+            backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1);
         }
-
         .control-btn {
-            background: transparent;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: transparent; color: white; border: none; padding: 12px; border-radius: 50%; cursor: pointer;
+            transition: all 0.3s; display: flex; justify-content: center; align-items: center;
         }
         .control-btn:hover { background: rgba(255, 255, 255, 0.15); transform: scale(1.1); }
         .control-btn.active-pause { color: #ffb347; background: rgba(255, 179, 71, 0.15); }
@@ -223,42 +97,30 @@
 </head>
 <body class="flex flex-col relative">
 
-    <!-- 🚪 Welcome Screen -->
     <div id="welcome-screen">
-        <!-- 🔱 Unique Abstract Voice AI Logo -->
         <div class="mb-10 relative">
             <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_0_20px_rgba(255,140,0,0.6)]">
-                <!-- Outer Resonance Rings -->
                 <circle cx="50" cy="50" r="48" stroke="url(#paint0_linear)" stroke-opacity="0.3" stroke-width="2"/>
                 <circle cx="50" cy="50" r="38" stroke="url(#paint0_linear)" stroke-opacity="0.6" stroke-width="1.5" stroke-dasharray="4 6" class="animate-spin" style="animation-duration: 15s;"/>
-                <!-- Inner Neural Wave Core -->
                 <path d="M25 50 C 35 20, 65 80, 75 50" stroke="white" stroke-width="4" stroke-linecap="round"/>
                 <path d="M25 50 C 35 80, 65 20, 75 50" stroke="#ff8c00" stroke-width="4" stroke-linecap="round"/>
                 <circle cx="50" cy="50" r="8" fill="white" class="animate-pulse"/>
                 <defs>
                     <linearGradient id="paint0_linear" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-                        <stop stop-color="#ff8c00"/>
-                        <stop offset="1" stop-color="#ffffff"/>
+                        <stop stop-color="#ff8c00"/> <stop offset="1" stop-color="#ffffff"/>
                     </linearGradient>
                 </defs>
             </svg>
         </div>
-        
         <h1 class="text-4xl md:text-6xl font-bold mb-12 glow-text-white text-center px-4 tracking-tight">
-            Introducing the New<br>
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-white">Vedika Live</span>
+            Introducing the New<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-white">Vedika Live</span>
         </h1>
-        
         <button id="start-now-btn" class="btn-premium">
             Start Now <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
-        
-        <p class="absolute bottom-8 text-[10px] tracking-[0.3em] text-gray-500 uppercase font-bold">
-            Pioneered by Divy Patel • Bharat 🇮🇳
-        </p>
+        <p class="absolute bottom-8 text-[10px] tracking-[0.3em] text-gray-500 uppercase font-bold">Pioneered by Divy Patel • Bharat 🇮🇳</p>
     </div>
 
-    <!-- 🌟 Top Bar -->
     <header class="w-full p-6 flex justify-between items-center z-10">
         <div class="flex items-center gap-3">
             <svg width="24" height="24" viewBox="0 0 100 100" fill="none" class="opacity-90">
@@ -267,36 +129,28 @@
             </svg>
             <span class="text-sm font-bold tracking-[0.2em] uppercase text-gray-300">Vedika</span>
         </div>
-        <button id="toggle-subtitles-btn" class="text-xs uppercase tracking-wider text-gray-400 border border-gray-600 rounded-full px-5 py-2 hover:text-white hover:border-white transition-colors">
-            Show Subtitles
-        </button>
+        <div class="flex gap-4 items-center">
+            <button id="clear-memory-btn" class="text-[10px] uppercase tracking-wider text-red-400 hover:text-red-300 transition-colors" title="Clear Context Memory">
+                Clear Memory
+            </button>
+            <button id="toggle-subtitles-btn" class="text-xs uppercase tracking-wider text-gray-400 border border-gray-600 rounded-full px-5 py-2 hover:text-white hover:border-white transition-colors">
+                Show Subtitles
+            </button>
+        </div>
     </header>
 
-    <!-- 💬 Main Visual Area -->
     <main class="flex-1 flex flex-col justify-center items-center z-10 relative w-full h-full">
-        
-        <!-- The Dynamic Sharp & Fluid Orb -->
         <div class="orb-container">
-            <div id="vedika-orb" class="orb-wrapper">
-                <div class="orb-fluid"></div>
-                <div class="orb-overlay"></div>
-            </div>
-            <!-- Ripple Effect layer outside the sharp orb -->
+            <div id="vedika-orb" class="orb-wrapper"><div class="orb-fluid"></div><div class="orb-overlay"></div></div>
             <div id="vedika-ripple" class="orb-ripple"></div>
         </div>
-        
         <div id="orb-status" class="mt-12 text-xs uppercase tracking-[0.4em] text-gray-500 font-bold transition-all">Standby</div>
 
-        <!-- 📜 Subtitles Overlay -->
         <div id="subtitles-container" class="subtitles-wrapper">
-            <div id="subtitle-content" class="subtitle-text">
-                Waiting for voice input...
-            </div>
+            <div id="subtitle-content" class="subtitle-text">Waiting for voice input...</div>
         </div>
-
     </main>
 
-    <!-- 🎮 Center Control (Standby) -->
     <div id="standby-controls" class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
         <button id="go-live-btn" class="btn-premium pointer-events-auto mt-64">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
@@ -304,7 +158,6 @@
         </button>
     </div>
 
-    <!-- 🎮 Bottom Controls (Live Mode) -->
     <div id="live-controls" class="controls-bar hidden-force">
         <button id="pause-live-btn" class="control-btn" title="Pause Live">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
@@ -316,67 +169,59 @@
 
     <audio id="vedika-audio" hidden></audio>
 
-    <!-- 🛠️ Core Logic -->
     <script type="module">
         import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
 
+        // DOM Elements
         const welcomeScreen = document.getElementById('welcome-screen');
         const startNowBtn = document.getElementById('start-now-btn');
         const orbWrapper = document.getElementById('vedika-orb');
         const orbStatus = document.getElementById('orb-status');
-        
-        const standbyControls = document.getElementById('standby-controls');
         const goLiveBtn = document.getElementById('go-live-btn');
+        const standbyControls = document.getElementById('standby-controls');
         const liveControls = document.getElementById('live-controls');
         const pauseLiveBtn = document.getElementById('pause-live-btn');
         const endLiveBtn = document.getElementById('end-live-btn');
-        
         const toggleSubtitlesBtn = document.getElementById('toggle-subtitles-btn');
+        const clearMemoryBtn = document.getElementById('clear-memory-btn');
         const subtitlesContainer = document.getElementById('subtitles-container');
         const subtitleContent = document.getElementById('subtitle-content');
         const audioPlayer = document.getElementById('vedika-audio');
 
+        // State Variables
         let gradioClient = null;
-        let isLiveActive = false;
-        let isPaused = false;
-        let showSubtitles = false;
-        
-        let audioContext, analyser, microphone, scriptProcessor;
-        let mediaRecorder;
+        let isLiveActive = false, isPaused = false, showSubtitles = false;
+        let audioContext, analyser, microphone, scriptProcessor, mediaRecorder;
         let audioChunks = [];
-        let isUserSpeaking = false;
+        let isUserSpeaking = false, isVedikaSpeaking = false;
         let silenceTimer = null;
-        let isVedikaSpeaking = false;
 
-        // Cache Logic
-        if (localStorage.getItem('vedikaWelcomeSeen') === 'true') {
-            welcomeScreen.style.display = 'none';
-        }
+        // 🧠 LOCAL STORAGE CACHE (Memory)
+        let vedikaMemory = localStorage.getItem('vedika_chat_memory') || "";
+
+        // Welcome Screen Cache
+        if (localStorage.getItem('vedikaWelcomeSeen') === 'true') welcomeScreen.style.display = 'none';
         startNowBtn.addEventListener('click', () => {
             welcomeScreen.style.opacity = '0';
-            setTimeout(() => {
-                welcomeScreen.style.display = 'none';
-                localStorage.setItem('vedikaWelcomeSeen', 'true');
-            }, 800);
+            setTimeout(() => { welcomeScreen.style.display = 'none'; localStorage.setItem('vedikaWelcomeSeen', 'true'); }, 800);
         });
 
-        // 🛡️ SECURITY BUG FIX: Pause session and mute audio if user leaves the tab
+        // Tab Protection
         document.addEventListener("visibilitychange", () => {
             if (document.hidden) {
-                // If audio is playing, stop it immediately
-                if (!audioPlayer.paused) {
-                    audioPlayer.pause();
-                    audioPlayer.currentTime = 0;
-                }
-                // Auto-pause the session to prevent background microphone access
-                if (isLiveActive && !isPaused) {
-                    pauseLiveBtn.click();
-                    updateSubtitle("Session auto-paused for background privacy.", "System:");
-                }
+                if (!audioPlayer.paused) { audioPlayer.pause(); audioPlayer.currentTime = 0; }
+                if (isLiveActive && !isPaused) { pauseLiveBtn.click(); updateSubtitle("Session auto-paused for background privacy.", "System:"); }
             }
         });
 
-        // Initialize Server
+        // Clear Memory Logic
+        clearMemoryBtn.addEventListener('click', () => {
+            localStorage.removeItem('vedika_chat_memory');
+            vedikaMemory = "";
+            alert("Memory Cleared! Vedika has forgotten previous contexts.");
+        });
+
+        // Connect Client
         async function initClient() {
             try {
                 orbStatus.innerText = "Connecting...";
@@ -389,17 +234,14 @@
         }
         initClient();
 
-        // Subtitles Toggle
         toggleSubtitlesBtn.addEventListener('click', () => {
             showSubtitles = !showSubtitles;
             if (showSubtitles) {
                 subtitlesContainer.classList.add('visible');
-                toggleSubtitlesBtn.innerText = "Hide Subtitles";
-                toggleSubtitlesBtn.classList.replace('text-gray-400', 'text-white');
+                toggleSubtitlesBtn.innerText = "Hide Subtitles"; toggleSubtitlesBtn.classList.replace('text-gray-400', 'text-white');
             } else {
                 subtitlesContainer.classList.remove('visible');
-                toggleSubtitlesBtn.innerText = "Show Subtitles";
-                toggleSubtitlesBtn.classList.replace('text-white', 'text-gray-400');
+                toggleSubtitlesBtn.innerText = "Show Subtitles"; toggleSubtitlesBtn.classList.replace('text-white', 'text-gray-400');
             }
         });
 
@@ -410,7 +252,7 @@
             }
         }
 
-        // Voice Activity Detection & Dynamic Orb Sizing
+        // --- 🚀 LIGHTNING FAST VAD ENGINE ---
         async function startVAD() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -419,11 +261,8 @@
                 microphone = audioContext.createMediaStreamSource(stream);
                 scriptProcessor = audioContext.createScriptProcessor(2048, 1, 1);
 
-                analyser.smoothingTimeConstant = 0.8;
-                analyser.fftSize = 1024;
-                microphone.connect(analyser);
-                analyser.connect(scriptProcessor);
-                scriptProcessor.connect(audioContext.destination);
+                analyser.smoothingTimeConstant = 0.8; analyser.fftSize = 1024;
+                microphone.connect(analyser); analyser.connect(scriptProcessor); scriptProcessor.connect(audioContext.destination);
 
                 mediaRecorder = new MediaRecorder(stream);
                 mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
@@ -431,71 +270,52 @@
 
                 scriptProcessor.onaudioprocess = function() {
                     if (isPaused || isVedikaSpeaking || !isLiveActive) {
-                        // Reset orb scale naturally
-                        if (!isVedikaSpeaking && !orbWrapper.className.includes('processing')) {
-                            orbWrapper.style.transform = `scale(1)`;
-                        }
+                        if (!isVedikaSpeaking && !orbWrapper.className.includes('processing')) orbWrapper.style.transform = `scale(1)`;
                         return;
                     }
 
                     const array = new Uint8Array(analyser.frequencyBinCount);
                     analyser.getByteFrequencyData(array);
-                    let values = 0;
-                    for (let i = 0; i < array.length; i++) { values += array[i]; }
+                    let values = 0; for (let i = 0; i < array.length; i++) values += array[i];
                     const averageVolume = values / array.length;
 
-                    // 💥 Dynamic Orb Pumping when user speaks
                     if (isUserSpeaking) {
-                        const scale = 1 + (averageVolume / 120); 
+                        const scale = 1 + (averageVolume / 100); 
                         orbWrapper.style.transform = `scale(${Math.min(scale, 1.4)})`; 
                     }
 
-                    // Start recording threshold
                     if (averageVolume > 15) {
                         if (!isUserSpeaking) {
-                            isUserSpeaking = true;
-                            audioChunks = [];
-                            mediaRecorder.start();
-                            
-                            orbWrapper.className = "orb-wrapper"; 
-                            orbStatus.innerText = "Listening...";
+                            isUserSpeaking = true; audioChunks = []; mediaRecorder.start();
+                            orbWrapper.className = "orb-wrapper"; orbStatus.innerText = "Listening...";
                             updateSubtitle("...", "You:");
                         }
                         clearTimeout(silenceTimer);
-                        silenceTimer = setTimeout(handleSilence, 1500);
+                        // ⚡ BLAZING FAST: Reduced from 1500ms to 700ms ⚡
+                        silenceTimer = setTimeout(handleSilence, 700);
                     }
                 };
-            } catch (err) {
-                alert("Microphone access is required for Live mode.");
-                endLive();
-            }
+            } catch (err) { alert("Microphone access is required."); endLive(); }
         }
 
         function handleSilence() {
             if (isUserSpeaking && !isVedikaSpeaking && !isPaused && isLiveActive) {
                 isUserSpeaking = false;
                 orbWrapper.style.transform = `scale(1)`; 
-                
-                // 🌀 High-speed spinning state applied here
                 orbWrapper.className = "orb-wrapper processing";
                 orbStatus.innerText = "Processing...";
-                
-                // Request fulfilled: "Analyzing the command..."
                 updateSubtitle("Analyzing the command...", "System:");
-                
                 mediaRecorder.stop();
             }
         }
 
         function stopVAD() {
-            if (scriptProcessor) scriptProcessor.disconnect();
-            if (analyser) analyser.disconnect();
-            if (microphone) microphone.disconnect();
-            if (audioContext) audioContext.close();
+            if (scriptProcessor) scriptProcessor.disconnect(); if (analyser) analyser.disconnect();
+            if (microphone) microphone.disconnect(); if (audioContext) audioContext.close();
             if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
         }
 
-        // Send to Backend
+        // --- 🧠 BACKEND CONNECTION WITH MEMORY ---
         async function sendAudioToBackend() {
             if (!gradioClient || audioChunks.length === 0) return;
             
@@ -504,20 +324,30 @@
             const audioFile = new File([audioBlob], "live_input.wav", { type: 'audio/wav' });
 
             try {
-                const submission = gradioClient.submit("/process_all_in_one", { audio_filepath: audioFile });
+                // Sending Audio + Local Memory State
+                const submission = gradioClient.submit("/process_all_in_one", { 
+                    audio_filepath: audioFile,
+                    chat_memory: vedikaMemory 
+                });
 
                 for await (const msg of submission) {
                     if (msg.type === "data" && isLiveActive && !isPaused) {
                         const outputData = msg.data;
                         const audioResult = outputData[0];
                         const textLog = outputData[1];
+                        const updatedMemory = outputData[2]; // 🧠 Received new memory
 
                         const parts = textLog.split("🔱 वेदिका:");
-                        if (parts.length > 1) {
-                            updateSubtitle(parts[1].trim(), "Vedika:");
-                        }
+                        if (parts.length > 1) updateSubtitle(parts[1].trim(), "Vedika:");
 
+                        // Play audio and save memory
                         if (audioResult) {
+                            // Save memory securely to local storage
+                            if(updatedMemory) {
+                                vedikaMemory = updatedMemory;
+                                localStorage.setItem('vedika_chat_memory', vedikaMemory);
+                            }
+
                             orbWrapper.className = "orb-wrapper speaking";
                             orbStatus.innerText = "Speaking...";
                             
@@ -527,37 +357,25 @@
                             audioPlayer.onended = () => {
                                 if (isLiveActive && !isPaused) {
                                     isVedikaSpeaking = false;
-                                    orbWrapper.className = "orb-wrapper";
-                                    orbWrapper.style.transform = `scale(1)`;
-                                    orbStatus.innerText = "Active";
-                                    updateSubtitle("Waiting for voice input...");
+                                    orbWrapper.className = "orb-wrapper"; orbWrapper.style.transform = `scale(1)`;
+                                    orbStatus.innerText = "Active"; updateSubtitle("Waiting for voice input...");
                                 }
                             };
                         }
                     }
                 }
             } catch (error) {
-                console.error(error);
-                orbStatus.innerText = "Error";
-                isVedikaSpeaking = false;
-                orbWrapper.className = "orb-wrapper";
-                updateSubtitle("Connection error occurred.", "System:");
+                console.error(error); orbStatus.innerText = "Error"; isVedikaSpeaking = false;
+                orbWrapper.className = "orb-wrapper"; updateSubtitle("Connection error occurred.", "System:");
             }
         }
 
-        // Controls
         goLiveBtn.addEventListener('click', () => {
             if (!gradioClient) return alert("Server not connected.");
-            isLiveActive = true;
-            isPaused = false;
-            
-            standbyControls.classList.add('hidden-force');
-            liveControls.classList.remove('hidden-force');
-            
-            orbWrapper.className = "orb-wrapper";
-            orbStatus.innerText = "Active";
+            isLiveActive = true; isPaused = false;
+            standbyControls.classList.add('hidden-force'); liveControls.classList.remove('hidden-force');
+            orbWrapper.className = "orb-wrapper"; orbStatus.innerText = "Active";
             updateSubtitle("Live session started. Start speaking...");
-            
             startVAD();
         });
 
@@ -566,39 +384,23 @@
             if (isPaused) {
                 pauseLiveBtn.classList.add('active-pause');
                 pauseLiveBtn.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
-                orbWrapper.className = "orb-wrapper";
-                orbWrapper.style.transform = `scale(1)`;
-                orbStatus.innerText = "Paused";
-                audioPlayer.pause();
-                updateSubtitle("Session paused. Press play to resume.", "System:");
+                orbWrapper.className = "orb-wrapper"; orbWrapper.style.transform = `scale(1)`;
+                orbStatus.innerText = "Paused"; audioPlayer.pause(); updateSubtitle("Session paused. Press play to resume.", "System:");
             } else {
                 pauseLiveBtn.classList.remove('active-pause');
                 pauseLiveBtn.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
-                orbStatus.innerText = "Active";
-                if (!isVedikaSpeaking) updateSubtitle("Waiting for voice input...");
+                orbStatus.innerText = "Active"; if (!isVedikaSpeaking) updateSubtitle("Waiting for voice input...");
             }
         });
 
-        function endLive() {
-            isLiveActive = false;
-            isVedikaSpeaking = false;
-            stopVAD();
-            audioPlayer.pause();
-            
-            liveControls.classList.add('hidden-force');
-            standbyControls.classList.remove('hidden-force');
-            
-            orbWrapper.className = "orb-wrapper";
-            orbWrapper.style.transform = `scale(1)`;
-            orbStatus.innerText = "Standby";
-            updateSubtitle("Session ended.", "System:");
-            
-            isPaused = false;
-            pauseLiveBtn.classList.remove('active-pause');
+        endLiveBtn.addEventListener('click', () => {
+            isLiveActive = false; isVedikaSpeaking = false; stopVAD(); audioPlayer.pause();
+            liveControls.classList.add('hidden-force'); standbyControls.classList.remove('hidden-force');
+            orbWrapper.className = "orb-wrapper"; orbWrapper.style.transform = `scale(1)`;
+            orbStatus.innerText = "Standby"; updateSubtitle("Session ended.", "System:");
+            isPaused = false; pauseLiveBtn.classList.remove('active-pause');
             pauseLiveBtn.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
-        }
-
-        endLiveBtn.addEventListener('click', endLive);
+        });
     </script>
 </body>
 </html>
