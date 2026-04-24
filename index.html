@@ -1,222 +1,264 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vedika Voice Assistant - Premium</title>
-    
-    <!-- Tailwind CSS -->
+    <title>Vedika Live - Premium Voice AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <style>
-        /* 🍎 Apple Vision Pro Style Dark UI */
+        /* 🍎 Premium Apple Black Glassmorphism */
         body {
-            background-color: #000;
-            color: #fff;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            margin: 0;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
             overflow: hidden;
-            background: radial-gradient(circle at top, #11111a 0%, #000 100%);
+            background: radial-gradient(circle at 50% 0%, #1a1a24 0%, #000000 70%);
         }
 
-        .header-glass {
-            background: rgba(10, 10, 12, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        /* 🌟 Glowing White Text Utility */
+        .glow-text-white {
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.4);
         }
 
-        .chat-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 2rem;
+        /* 🧊 Glass Panels */
+        .glass-panel {
+            background: rgba(20, 20, 25, 0.4);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border-radius: 24px;
+        }
+
+        /* 🚪 Welcome Screen Overlay */
+        #welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000;
+            z-index: 9999;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* 🎙️ Premium Mic Button */
-        .mic-btn-wrapper {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 2rem;
+            transition: opacity 0.8s ease-out, visibility 0.8s;
         }
 
-        .mic-btn {
+        .btn-glow {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn-glow:hover {
+            background: rgba(255, 255, 255, 0.9);
+            color: #000000;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.6), 0 0 60px rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        /* 🎙️ Active Send/Record Button */
+        .active-btn {
+            background: #ffffff;
+            color: #000000;
+            border: none;
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #007aff, #005bb5);
-            border: none;
-            color: white;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            z-index: 10;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(0, 122, 255, 0.4);
-        }
-
-        .mic-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 15px 40px rgba(0, 122, 255, 0.6);
-        }
-
-        /* Recording Animation */
-        .recording .mic-btn {
-            background: linear-gradient(135deg, #ff3b30, #cc0000);
-            box-shadow: 0 10px 30px rgba(255, 59, 48, 0.6);
-            animation: pulse-mic 1.5s infinite;
-        }
-
-        .ripple {
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: rgba(255, 59, 48, 0.4);
-            z-index: 1;
-            opacity: 0;
-        }
-
-        .recording .ripple {
-            animation: ripple-effect 1.5s infinite;
-        }
-
-        @keyframes pulse-mic {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes ripple-effect {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(2.5); opacity: 0; }
-        }
-
-        /* Processing Animation */
-        .processing .mic-btn {
-            background: linear-gradient(135deg, #5856d6, #3a3999);
-            animation: spin-pulse 2s infinite linear;
-        }
-
-        @keyframes spin-pulse {
-            0% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.1) rotate(180deg); }
-            100% { transform: scale(1) rotate(360deg); }
-        }
-
-        /* Log Box */
-        .log-box {
-            background: rgba(25, 25, 30, 0.6);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 20px;
-            width: 100%;
-            max-width: 600px;
-            min-height: 100px;
-            color: #e5e5ea;
-            font-size: 1.1rem;
-            line-height: 1.6;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            white-space: pre-wrap;
             transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
         }
 
-        .status-text {
-            margin-top: 15px;
-            color: #8e8e93;
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-size: 0.85rem;
+        .active-btn.recording {
+            background: #ff3b30;
+            color: #ffffff;
+            box-shadow: 0 0 30px rgba(255, 59, 48, 0.6);
+            animation: pulse-red 1.5s infinite;
         }
+
+        @keyframes pulse-red {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 59, 48, 0.5); }
+            50% { transform: scale(1.1); box-shadow: 0 0 40px rgba(255, 59, 48, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 59, 48, 0.5); }
+        }
+
+        /* 🧠 Distinct Thinking Box */
+        .thinking-box {
+            background: rgba(0, 0, 0, 0.6);
+            border-left: 4px solid #ffffff;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            color: #a1a1a6;
+            font-size: 0.9rem;
+            border-radius: 0 12px 12px 0;
+            display: none; /* Visible only when thinking */
+        }
+
+        /* 📜 Persistent Chat History Scrollbar */
+        .chat-scroll::-webkit-scrollbar { width: 6px; }
+        .chat-scroll::-webkit-scrollbar-track { background: transparent; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
     </style>
 </head>
-<body>
+<body class="flex flex-col">
 
-    <!-- 🌟 Header -->
-    <header class="header-glass text-white p-5 text-center flex flex-col items-center">
-        <h1 class="text-2xl font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-            Vedika Voice Assistant
+    <div id="welcome-screen">
+        <h1 class="text-5xl md:text-7xl font-bold mb-10 glow-text-white text-center px-4">
+            Introducing the New Vedika Live
         </h1>
-        <p class="text-[10px] text-gray-500 tracking-[0.2em] font-bold mt-1 uppercase">Pioneered by Divy Patel | Bharat 🇮🇳</p>
+        <button id="start-now-btn" class="btn-glow">Start Now</button>
+        <p class="absolute bottom-10 text-xs tracking-[0.3em] text-gray-500 uppercase">
+            Pioneered by Divy Patel • Bharat 🇮🇳
+        </p>
+    </div>
+
+    <header class="p-6 text-center z-10 border-b border-white/10 glass-panel rounded-none">
+        <h2 class="text-3xl font-bold glow-text-white tracking-wider">VEDIKA LIVE</h2>
+        <div class="flex justify-center items-center gap-2 mt-2">
+            <div id="connection-dot" class="w-2 h-2 rounded-full bg-red-500"></div>
+            <span id="connection-status" class="text-xs text-gray-400 uppercase tracking-widest font-semibold">Connecting to Server...</span>
+        </div>
     </header>
 
-    <!-- 💬 Main Interface -->
-    <main class="chat-container">
+    <main class="flex-1 overflow-hidden flex flex-col md:flex-row p-4 gap-4 z-10 max-w-7xl mx-auto w-full">
         
-        <div class="mic-btn-wrapper" id="mic-wrapper">
-            <div class="ripple"></div>
-            <button id="mic-btn" class="mic-btn">
-                <!-- SVG Mic Icon -->
+        <div class="flex-1 glass-panel flex flex-col p-6 overflow-hidden">
+            <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-white/10 pb-2">Live Interaction Log</h3>
+            
+            <div id="thinking-box" class="thinking-box">
+                <div class="flex items-center gap-2 mb-2">
+                    <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <span class="text-white font-bold tracking-wider">AI Internal Reasoning</span>
+                </div>
+                <div id="thinking-content" class="whitespace-pre-wrap">Processing audio data and contextual parameters...</div>
+            </div>
+
+            <div id="chat-history" class="flex-1 overflow-y-auto chat-scroll pr-2 space-y-6">
+                <div class="text-center text-gray-600 italic mt-10">System ready. Waiting for voice input...</div>
+            </div>
+        </div>
+
+        <div class="w-full md:w-80 glass-panel flex flex-col items-center justify-center p-8 relative">
+            <div class="absolute top-6 left-6 text-xs text-gray-500 font-bold uppercase tracking-widest">Controls</div>
+            
+            <button id="record-btn" class="active-btn mb-8">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
                     <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
                     <line x1="12" y1="19" x2="12" y2="22"></line>
                 </svg>
             </button>
+            
+            <div id="action-status" class="text-white font-semibold tracking-wide text-center h-6 glow-text-white">
+                Tap to Speak
+            </div>
+
+            <audio id="vedika-audio" hidden></audio>
         </div>
-
-        <div id="status" class="status-text mb-6">बोलने के लिए माइक पर क्लिक करें</div>
-        
-        <div id="log-box" class="log-box hidden">
-            <!-- संवाद यहाँ दिखेगा -->
-        </div>
-
-        <!-- हिडन ऑडियो प्लेयर वेदिका की आवाज़ के लिए -->
-        <audio id="audio-player" hidden></audio>
-
     </main>
 
-    <!-- 🛠️ Core Logic (Gradio Client & MediaRecorder) -->
     <script type="module">
         import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
 
-        const micBtn = document.getElementById('mic-btn');
-        const micWrapper = document.getElementById('mic-wrapper');
-        const statusText = document.getElementById('status');
-        const logBox = document.getElementById('log-box');
-        const audioPlayer = document.getElementById('audio-player');
+        // --- Cache Memory (Local Storage) Logic for Welcome Screen ---
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const startNowBtn = document.getElementById('start-now-btn');
+
+        // Check if user has visited before
+        if (localStorage.getItem('vedikaWelcomeSeen') === 'true') {
+            welcomeScreen.style.display = 'none';
+        }
+
+        // Hide and save to cache on click
+        startNowBtn.addEventListener('click', () => {
+            welcomeScreen.style.opacity = '0';
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+                localStorage.setItem('vedikaWelcomeSeen', 'true');
+            }, 800);
+        });
+
+        // --- App Variables ---
+        const recordBtn = document.getElementById('record-btn');
+        const actionStatus = document.getElementById('action-status');
+        const connectionDot = document.getElementById('connection-dot');
+        const connectionStatus = document.getElementById('connection-status');
+        const chatHistory = document.getElementById('chat-history');
+        const thinkingBox = document.getElementById('thinking-box');
+        const thinkingContent = document.getElementById('thinking-content');
+        const audioPlayer = document.getElementById('vedika-audio');
 
         let mediaRecorder;
         let audioChunks = [];
         let isRecording = false;
         let gradioClient = null;
 
-        // 🧠 सर्वर से जुड़ना
-        async function connectServer() {
+        // --- Connect to HF Space ---
+        async function initClient() {
             try {
-                statusText.innerText = "वेदिका सर्वर से जुड़ रहा है...";
-                // आपका दिया हुआ स्पेस ID
+                // Connecting to your specific Live Voice Space
                 gradioClient = await Client.connect("pateltraders55455/TTS");
-                statusText.innerText = "सर्वर तैयार है। बोलने के लिए माइक दबाएँ।";
-            } catch (error) {
-                statusText.innerText = "सर्वर से जुड़ने में त्रुटि ❌";
-                console.error(error);
+                connectionDot.classList.replace('bg-red-500', 'bg-green-500');
+                connectionStatus.innerText = "SERVER ONLINE";
+            } catch (err) {
+                connectionDot.classList.replace('bg-green-500', 'bg-red-500');
+                connectionStatus.innerText = "CONNECTION FAILED";
+                console.error(err);
             }
         }
-        connectServer();
+        initClient();
 
-        // 🎙️ रिकॉर्डिंग शुरू/बंद करने का लॉजिक
-        micBtn.addEventListener('click', async () => {
-            if (!gradioClient) {
-                alert("सर्वर अभी कनेक्ट हो रहा है, कृपया प्रतीक्षा करें...");
-                return;
+        // --- Add Message to Chat History ---
+        function appendMessage(role, text, isUpdate = false) {
+            if (chatHistory.innerHTML.includes("System ready. Waiting")) {
+                chatHistory.innerHTML = "";
             }
 
+            if (isUpdate) {
+                // If live updating, update the last AI message
+                const lastMsg = chatHistory.lastElementChild;
+                if (lastMsg && lastMsg.dataset.role === 'ai') {
+                    lastMsg.innerHTML = `<span class="font-bold text-white glow-text-white">Vedika:</span> <span class="text-gray-200">${text}</span>`;
+                    chatHistory.scrollTop = chatHistory.scrollHeight;
+                    return;
+                }
+            }
+
+            const msgDiv = document.createElement('div');
+            msgDiv.dataset.role = role;
+            msgDiv.className = `p-4 rounded-2xl ${role === 'user' ? 'bg-white/10 ml-8 border border-white/20' : 'bg-transparent mr-8'}`;
+            
+            const prefix = role === 'user' ? 'You' : 'Vedika';
+            const titleColor = role === 'user' ? 'text-gray-400' : 'text-white glow-text-white';
+            
+            msgDiv.innerHTML = `<span class="font-bold ${titleColor}">${prefix}:</span> <span class="text-gray-200">${text}</span>`;
+            chatHistory.appendChild(msgDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        // --- Recording Logic ---
+        recordBtn.addEventListener('click', async () => {
+            if (!gradioClient) return alert("Server not connected yet.");
+
             if (!isRecording) {
-                // रिकॉर्डिंग शुरू करें
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     mediaRecorder = new MediaRecorder(stream);
@@ -226,73 +268,86 @@
                         if (e.data.size > 0) audioChunks.push(e.data);
                     };
 
-                    mediaRecorder.onstop = processAudioAndSend;
+                    mediaRecorder.onstop = sendToVedikaLive;
 
                     mediaRecorder.start();
                     isRecording = true;
                     
-                    micWrapper.classList.add('recording');
-                    statusText.innerText = "मैं सुन रही हूँ... (रोकने के लिए दोबारा दबाएँ)";
-                    logBox.classList.add('hidden');
+                    recordBtn.classList.add('recording');
+                    actionStatus.innerText = "Listening...";
+                    actionStatus.classList.add('glow-text-white');
                 } catch (err) {
-                    alert("माइक की अनुमति नहीं मिली! कृपया अनुमति दें।");
+                    alert("Microphone permission denied.");
                 }
             } else {
-                // रिकॉर्डिंग बंद करें और भेजें
                 mediaRecorder.stop();
                 mediaRecorder.stream.getTracks().forEach(track => track.stop());
                 isRecording = false;
                 
-                micWrapper.classList.remove('recording');
-                micWrapper.classList.add('processing');
-                statusText.innerText = "वेदिका सोच रही है...";
+                recordBtn.classList.remove('recording');
+                actionStatus.innerText = "Processing...";
             }
         });
 
-        // 🚀 Gradio API को ऑडियो भेजना
-        async function processAudioAndSend() {
-            // ऑडियो को Blob में बदलना
+        // --- Live Streaming API Call ---
+        async function sendToVedikaLive() {
             const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-            
-            // 🛡️ ब्रह्मास्त्र: उस त्रुटि (Method string required) को रोकने के लिए
-            // हम Blob को एक उचित JavaScript 'File' ऑब्जेक्ट में बदल रहे हैं
-            const audioFile = new File([audioBlob], "recording.wav", { type: 'audio/wav' });
+            const audioFile = new File([audioBlob], "live_input.wav", { type: 'audio/wav' });
+
+            appendMessage('user', "Audio sent...");
+            thinkingBox.style.display = 'block'; // Show Thinking Box
+            thinkingContent.innerText = "Analyzing waveform and generating context...";
 
             try {
-                // API Call (आपका दिया हुआ कोड, संशोधित)
-                const result = await gradioClient.predict("/process_all_in_one", {
+                // Using .submit() instead of .predict() for Live Streaming
+                const submission = gradioClient.submit("/process_all_in_one", {
                     audio_filepath: audioFile, 
                 });
 
-                // आउटपुट डेटा प्राप्त करना
-                const audioData = result.data[0]; // यह वेदिका का ऑडियो है
-                const textLog = result.data[1];   // यह संवाद का टेक्स्ट है
+                // Listen to live data stream
+                for await (const msg of submission) {
+                    if (msg.type === "data") {
+                        const outputData = msg.data;
+                        const audioResult = outputData[0]; // Final audio (null during streaming)
+                        const textLog = outputData[1];     // Live text
 
-                // UI अपडेट करना
-                logBox.classList.remove('hidden');
-                logBox.innerText = textLog;
-                statusText.innerText = "वेदिका बोल रही है...";
+                        // Extract only Vedika's part from the log (split by 'Vedika:')
+                        const parts = textLog.split("🔱 वेदिका:");
+                        if (parts.length > 1) {
+                            const aiText = parts[1].trim();
+                            
+                            // Update Thinking Box parameters (simulated reasoning visibility)
+                            thinkingContent.innerText = "Decoding tokens...\nLength: " + aiText.length + " chars";
 
-                // आवाज़ चलाना
-                if (audioData) {
-                    // Gradio ऑडियो का URL देता है
-                    audioPlayer.src = audioData.url || audioData;
-                    audioPlayer.play();
-                    
-                    // जब आवाज़ खत्म हो जाए
-                    audioPlayer.onended = () => {
-                        micWrapper.classList.remove('processing');
-                        statusText.innerText = "बोलने के लिए माइक पर क्लिक करें";
-                    };
-                } else {
-                    micWrapper.classList.remove('processing');
-                    statusText.innerText = "बोलने के लिए तैयार";
+                            appendMessage('ai', aiText, true);
+                        } else if (textLog.includes("🗣️ आपने कहा:")) {
+                            // Update user message accurately once STT is done
+                            const userText = textLog.split("🗣️ आपने कहा:")[1].split("\n")[0].trim();
+                            // Find the last user message and update it
+                            const allUserMsgs = document.querySelectorAll('[data-role="user"]');
+                            if (allUserMsgs.length > 0) {
+                                allUserMsgs[allUserMsgs.length - 1].innerHTML = `<span class="font-bold text-gray-400">You:</span> <span class="text-gray-200">${userText}</span>`;
+                            }
+                        }
+
+                        // Play audio when final result arrives
+                        if (audioResult) {
+                            thinkingBox.style.display = 'none'; // Hide thinking box when done
+                            actionStatus.innerText = "Speaking...";
+                            
+                            audioPlayer.src = audioResult.url || audioResult;
+                            audioPlayer.play();
+                            
+                            audioPlayer.onended = () => {
+                                actionStatus.innerText = "Tap to Speak";
+                            };
+                        }
+                    }
                 }
-
             } catch (error) {
-                console.error("API Error:", error);
-                statusText.innerText = "त्रुटि आई। पुनः प्रयास करें।";
-                micWrapper.classList.remove('processing');
+                console.error("Streaming Error:", error);
+                actionStatus.innerText = "Error Occurred";
+                thinkingBox.style.display = 'none';
             }
         }
     </script>
