@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vedika Voice Assistant - Premium</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* 🍎 Apple Vision Pro Style Dark UI */
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: radial-gradient(circle at top, #11111a 0%, #000 100%);
+        }
+
+        .header-glass {
+            background: rgba(10, 10, 12, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 🎙️ Premium Mic Button */
+        .mic-btn-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .mic-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007aff, #005bb5);
+            border: none;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 122, 255, 0.4);
+        }
+
+        .mic-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 122, 255, 0.6);
+        }
+
+        /* Recording Animation */
+        .recording .mic-btn {
+            background: linear-gradient(135deg, #ff3b30, #cc0000);
+            box-shadow: 0 10px 30px rgba(255, 59, 48, 0.6);
+            animation: pulse-mic 1.5s infinite;
+        }
+
+        .ripple {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 59, 48, 0.4);
+            z-index: 1;
+            opacity: 0;
+        }
+
+        .recording .ripple {
+            animation: ripple-effect 1.5s infinite;
+        }
+
+        @keyframes pulse-mic {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes ripple-effect {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        /* Processing Animation */
+        .processing .mic-btn {
+            background: linear-gradient(135deg, #5856d6, #3a3999);
+            animation: spin-pulse 2s infinite linear;
+        }
+
+        @keyframes spin-pulse {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+            100% { transform: scale(1) rotate(360deg); }
+        }
+
+        /* Log Box */
+        .log-box {
+            background: rgba(25, 25, 30, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            min-height: 100px;
+            color: #e5e5ea;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            white-space: pre-wrap;
+            transition: all 0.3s;
+        }
+
+        .status-text {
+            margin-top: 15px;
+            color: #8e8e93;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🌟 Header -->
+    <header class="header-glass text-white p-5 text-center flex flex-col items-center">
+        <h1 class="text-2xl font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+            Vedika Voice Assistant
+        </h1>
+        <p class="text-[10px] text-gray-500 tracking-[0.2em] font-bold mt-1 uppercase">Pioneered by Divy Patel | Bharat 🇮🇳</p>
+    </header>
+
+    <!-- 💬 Main Interface -->
+    <main class="chat-container">
+        
+        <div class="mic-btn-wrapper" id="mic-wrapper">
+            <div class="ripple"></div>
+            <button id="mic-btn" class="mic-btn">
+                <!-- SVG Mic Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="22"></line>
+                </svg>
+            </button>
+        </div>
+
+        <div id="status" class="status-text mb-6">बोलने के लिए माइक पर क्लिक करें</div>
+        
+        <div id="log-box" class="log-box hidden">
+            <!-- संवाद यहाँ दिखेगा -->
+        </div>
+
+        <!-- हिडन ऑडियो प्लेयर वेदिका की आवाज़ के लिए -->
+        <audio id="audio-player" hidden></audio>
+
+    </main>
+
+    <!-- 🛠️ Core Logic (Gradio Client & MediaRecorder) -->
+    <script type="module">
+        import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
+
+        const micBtn = document.getElementById('mic-btn');
+        const micWrapper = document.getElementById('mic-wrapper');
+        const statusText = document.getElementById('status');
+        const logBox = document.getElementById('log-box');
+        const audioPlayer = document.getElementById('audio-player');
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        let gradioClient = null;
+
+        // 🧠 सर्वर से जुड़ना
+        async function connectServer() {
+            try {
+                statusText.innerText = "वेदिका सर्वर से जुड़ रहा है...";
+                // आपका दिया हुआ स्पेस ID
+                gradioClient = await Client.connect("pateltraders55455/TTS");
+                statusText.innerText = "सर्वर तैयार है। बोलने के लिए माइक दबाएँ।";
+            } catch (error) {
+                statusText.innerText = "सर्वर से जुड़ने में त्रुटि ❌";
+                console.error(error);
+            }
+        }
+        connectServer();
+
+        // 🎙️ रिकॉर्डिंग शुरू/बंद करने का लॉजिक
+        micBtn.addEventListener('click', async () => {
+            if (!gradioClient) {
+                alert("सर्वर अभी कनेक्ट हो रहा है, कृपया प्रतीक्षा करें...");
+                return;
+            }
+
+            if (!isRecording) {
+                // रिकॉर्डिंग शुरू करें
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = e => {
+                        if (e.data.size > 0) audioChunks.push(e.data);
+                    };
+
+                    mediaRecorder.onstop = processAudioAndSend;
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    
+                    micWrapper.classList.add('recording');
+                    statusText.innerText = "मैं सुन रही हूँ... (रोकने के लिए दोबारा दबाएँ)";
+                    logBox.classList.add('hidden');
+                } catch (err) {
+                    alert("माइक की अनुमति नहीं मिली! कृपया अनुमति दें।");
+                }
+            } else {
+                // रिकॉर्डिंग बंद करें और भेजें
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                isRecording = false;
+                
+                micWrapper.classList.remove('recording');
+                micWrapper.classList.add('processing');
+                statusText.innerText = "वेदिका सोच रही है...";
+            }
+        });
+
+        // 🚀 Gradio API को ऑडियो भेजना
+        async function processAudioAndSend() {
+            // ऑडियो को Blob में बदलना
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            
+            // 🛡️ ब्रह्मास्त्र: उस त्रुटि (Method string required) को रोकने के लिए
+            // हम Blob को एक उचित JavaScript 'File' ऑब्जेक्ट में बदल रहे हैं
+            const audioFile = new File([audioBlob], "recording.wav", { type: 'audio/wav' });
+
+            try {
+                // API Call (आपका दिया हुआ कोड, संशोधित)
+                const result = await gradioClient.predict("/process_all_in_one", {
+                    audio_filepath: audioFile, 
+                });
+
+                // आउटपुट डेटा प्राप्त करना
+                const audioData = result.data[0]; // यह वेदिका का ऑडियो है
+                const textLog = result.data[1];   // यह संवाद का टेक्स्ट है
+
+                // UI अपडेट करना
+                logBox.classList.remove('hidden');
+                logBox.innerText = textLog;
+                statusText.innerText = "वेदिका बोल रही है...";
+
+                // आवाज़ चलाना
+                if (audioData) {
+                    // Gradio ऑडियो का URL देता है
+                    audioPlayer.src = audioData.url || audioData;
+                    audioPlayer.play();
+                    
+                    // जब आवाज़ खत्म हो जाए
+                    audioPlayer.onended = () => {
+                        micWrapper.classList.remove('processing');
+                        statusText.innerText = "बोलने के लिए माइक पर क्लिक करें";
+                    };
+                } else {
+                    micWrapper.classList.remove('processing');
+                    statusText.innerText = "बोलने के लिए तैयार";
+                }
+
+            } catch (error) {
+                console.error("API Error:", error);
+                statusText.innerText = "त्रुटि आई। पुनः प्रयास करें।";
+                micWrapper.classList.remove('processing');
+            }
+        }
+    </script>
+</body>
+</html>
