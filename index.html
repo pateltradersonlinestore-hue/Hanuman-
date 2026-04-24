@@ -2,192 +2,316 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vedika Live - Premium Voice AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vedika Live - Continuous AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 🍎 Premium Apple Black Glassmorphism */
+        /* 🍎 Premium Apple Glassmorphism & Dark Aesthetic */
         body {
             background-color: #000000;
             color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
             margin: 0;
             height: 100vh;
             overflow: hidden;
-            background: radial-gradient(circle at 50% 0%, #1a1a24 0%, #000000 70%);
+            /* Subtle dual-color shade: Deep Navy to dark Teal */
+            background: radial-gradient(circle at top left, rgba(20, 25, 45, 0.4), transparent 50%),
+                        radial-gradient(circle at bottom right, rgba(0, 30, 40, 0.4), transparent 50%),
+                        #000000;
         }
 
-        /* 🌟 Glowing White Text Utility */
         .glow-text-white {
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.4);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 0 0 25px rgba(255, 255, 255, 0.3);
         }
 
-        /* 🧊 Glass Panels */
-        .glass-panel {
-            background: rgba(20, 20, 25, 0.4);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-            border-radius: 24px;
-        }
-
-        /* 🚪 Welcome Screen Overlay */
+        /* 🚪 Welcome Screen */
         #welcome-screen {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background: #000000;
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
             z-index: 9999;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: opacity 0.8s ease-out, visibility 0.8s;
+            transition: opacity 0.8s ease, visibility 0.8s;
         }
 
-        .btn-glow {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+        .btn-premium {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: #ffffff;
-            padding: 16px 40px;
+            padding: 14px 36px;
             border-radius: 50px;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
         }
 
-        .btn-glow:hover {
+        .btn-premium:hover {
             background: rgba(255, 255, 255, 0.9);
             color: #000000;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.6), 0 0 60px rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
         }
 
-        /* 🎙️ Active Send/Record Button */
-        .active-btn {
-            background: #ffffff;
-            color: #000000;
-            border: none;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
+        /* 🔮 The Vedika Live Orb (Large, Orange + White) */
+        .orb-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
             display: flex;
             justify-content: center;
             align-items: center;
+            margin: 0 auto;
+        }
+
+        .orb {
+            /* Increased base size */
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            /* Orange and White Gradient */
+            background: linear-gradient(135deg, #ff7e00, #ffffff, #ffb347);
+            filter: blur(12px);
+            opacity: 0.8;
+            /* Using transform for JS reactive scaling */
+            transition: transform 0.1s ease-out, background 0.5s ease;
+            box-shadow: 0 0 40px rgba(255, 126, 0, 0.4), inset 0 0 20px rgba(255,255,255,0.8);
+            will-change: transform;
+        }
+
+        /* State: Processing (Thinking) */
+        .orb.processing {
+            background: linear-gradient(135deg, #ff9500, #ffcc00);
+            opacity: 0.9;
+            filter: blur(15px);
+            animation: spin-pulse 2s infinite linear;
+        }
+
+        /* State: Speaking (Vedika Speaking) */
+        .orb.speaking {
+            background: linear-gradient(135deg, #ff8c00, #ffffff);
+            opacity: 1;
+            filter: blur(10px);
+            animation: ripple-speak 1.5s infinite;
+        }
+
+        @keyframes spin-pulse {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+            100% { transform: scale(1) rotate(360deg); }
+        }
+        @keyframes ripple-speak {
+            0% { box-shadow: 0 0 0 0 rgba(255, 140, 0, 0.6); transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { box-shadow: 0 0 0 50px rgba(255, 140, 0, 0); transform: scale(1); }
+        }
+
+        /* 📜 Subtitles Container */
+        .subtitles-wrapper {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 650px;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+            z-index: 20;
+        }
+
+        .subtitles-wrapper.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .subtitle-text {
+            background: rgba(20, 20, 20, 0.7);
+            padding: 18px 28px;
+            border-radius: 24px;
+            backdrop-filter: blur(15px);
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: #f5f5f7;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* 🎮 Bottom Controls */
+        .controls-bar {
+            position: fixed;
+            bottom: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 30;
+            background: rgba(30, 30, 35, 0.7);
+            padding: 12px 24px;
+            border-radius: 50px;
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        .control-btn {
+            background: transparent;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 50%;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
+        .control-btn:hover { background: rgba(255, 255, 255, 0.15); transform: scale(1.1); }
+        .control-btn.active-pause { color: #ffb347; background: rgba(255, 179, 71, 0.15); }
+        .control-btn.end-call { color: #ef4444; background: rgba(239, 68, 68, 0.15); }
+        .control-btn.end-call:hover { background: rgba(239, 68, 68, 0.3); }
 
-        .active-btn.recording {
-            background: #ff3b30;
-            color: #ffffff;
-            box-shadow: 0 0 30px rgba(255, 59, 48, 0.6);
-            animation: pulse-red 1.5s infinite;
-        }
-
-        @keyframes pulse-red {
-            0% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 59, 48, 0.5); }
-            50% { transform: scale(1.1); box-shadow: 0 0 40px rgba(255, 59, 48, 0.8); }
-            100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 59, 48, 0.5); }
-        }
-
-        /* 🧠 Distinct Thinking Box */
-        .thinking-box {
-            background: rgba(0, 0, 0, 0.6);
-            border-left: 4px solid #ffffff;
-            padding: 15px;
-            margin-bottom: 20px;
-            font-family: monospace;
-            color: #a1a1a6;
-            font-size: 0.9rem;
-            border-radius: 0 12px 12px 0;
-            display: none; /* Visible only when thinking */
-        }
-
-        /* 📜 Persistent Chat History Scrollbar */
-        .chat-scroll::-webkit-scrollbar { width: 6px; }
-        .chat-scroll::-webkit-scrollbar-track { background: transparent; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        .hidden-force { display: none !important; }
     </style>
 </head>
-<body class="flex flex-col">
+<body class="flex flex-col relative">
 
+    <!-- 🚪 Welcome Screen -->
     <div id="welcome-screen">
-        <h1 class="text-5xl md:text-7xl font-bold mb-10 glow-text-white text-center px-4">
-            Introducing the New Vedika Live
+        <!-- 🔱 Unique Abstract Voice AI Logo -->
+        <div class="mb-10 relative">
+            <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_0_20px_rgba(255,140,0,0.6)]">
+                <!-- Outer Resonance Rings -->
+                <circle cx="50" cy="50" r="48" stroke="url(#paint0_linear)" stroke-opacity="0.3" stroke-width="2"/>
+                <circle cx="50" cy="50" r="38" stroke="url(#paint0_linear)" stroke-opacity="0.6" stroke-width="1.5" stroke-dasharray="4 6" class="animate-spin" style="animation-duration: 15s;"/>
+                <!-- Inner Neural Wave Core -->
+                <path d="M25 50 C 35 20, 65 80, 75 50" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                <path d="M25 50 C 35 80, 65 20, 75 50" stroke="#ff8c00" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="50" cy="50" r="8" fill="white" class="animate-pulse"/>
+                <defs>
+                    <linearGradient id="paint0_linear" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#ff8c00"/>
+                        <stop offset="1" stop-color="#ffffff"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+        
+        <h1 class="text-4xl md:text-6xl font-bold mb-12 glow-text-white text-center px-4 tracking-tight">
+            Introducing the New<br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-white">Vedika Live</span>
         </h1>
-        <button id="start-now-btn" class="btn-glow">Start Now</button>
-        <p class="absolute bottom-10 text-xs tracking-[0.3em] text-gray-500 uppercase">
+        
+        <button id="start-now-btn" class="btn-premium">
+            Start Now <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        
+        <p class="absolute bottom-8 text-[10px] tracking-[0.3em] text-gray-500 uppercase font-bold">
             Pioneered by Divy Patel • Bharat 🇮🇳
         </p>
     </div>
 
-    <header class="p-6 text-center z-10 border-b border-white/10 glass-panel rounded-none">
-        <h2 class="text-3xl font-bold glow-text-white tracking-wider">VEDIKA LIVE</h2>
-        <div class="flex justify-center items-center gap-2 mt-2">
-            <div id="connection-dot" class="w-2 h-2 rounded-full bg-red-500"></div>
-            <span id="connection-status" class="text-xs text-gray-400 uppercase tracking-widest font-semibold">Connecting to Server...</span>
+    <!-- 🌟 Top Bar -->
+    <header class="w-full p-6 flex justify-between items-center z-10">
+        <div class="flex items-center gap-3">
+            <svg width="24" height="24" viewBox="0 0 100 100" fill="none" class="opacity-90">
+                <circle cx="50" cy="50" r="40" stroke="white" stroke-width="6"/>
+                <circle cx="50" cy="50" r="15" fill="#ff8c00"/>
+            </svg>
+            <span class="text-sm font-bold tracking-[0.2em] uppercase text-gray-300">Vedika</span>
         </div>
+        <button id="toggle-subtitles-btn" class="text-xs uppercase tracking-wider text-gray-400 border border-gray-600 rounded-full px-5 py-2 hover:text-white hover:border-white transition-colors">
+            Show Subtitles
+        </button>
     </header>
 
-    <main class="flex-1 overflow-hidden flex flex-col md:flex-row p-4 gap-4 z-10 max-w-7xl mx-auto w-full">
+    <!-- 💬 Main Visual Area -->
+    <main class="flex-1 flex flex-col justify-center items-center z-10 relative w-full h-full">
         
-        <div class="flex-1 glass-panel flex flex-col p-6 overflow-hidden">
-            <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-white/10 pb-2">Live Interaction Log</h3>
-            
-            <div id="thinking-box" class="thinking-box">
-                <div class="flex items-center gap-2 mb-2">
-                    <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                    <span class="text-white font-bold tracking-wider">AI Internal Reasoning</span>
-                </div>
-                <div id="thinking-content" class="whitespace-pre-wrap">Processing audio data and contextual parameters...</div>
-            </div>
+        <!-- The Dynamic Large Orange Orb -->
+        <div class="orb-container">
+            <div id="vedika-orb" class="orb"></div>
+        </div>
+        
+        <div id="orb-status" class="mt-12 text-xs uppercase tracking-[0.4em] text-gray-500 font-bold transition-all">Standby</div>
 
-            <div id="chat-history" class="flex-1 overflow-y-auto chat-scroll pr-2 space-y-6">
-                <div class="text-center text-gray-600 italic mt-10">System ready. Waiting for voice input...</div>
+        <!-- 📜 Subtitles Overlay -->
+        <div id="subtitles-container" class="subtitles-wrapper">
+            <div id="subtitle-content" class="subtitle-text">
+                Waiting for voice input...
             </div>
         </div>
 
-        <div class="w-full md:w-80 glass-panel flex flex-col items-center justify-center p-8 relative">
-            <div class="absolute top-6 left-6 text-xs text-gray-500 font-bold uppercase tracking-widest">Controls</div>
-            
-            <button id="record-btn" class="active-btn mb-8">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
-                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                    <line x1="12" y1="19" x2="12" y2="22"></line>
-                </svg>
-            </button>
-            
-            <div id="action-status" class="text-white font-semibold tracking-wide text-center h-6 glow-text-white">
-                Tap to Speak
-            </div>
-
-            <audio id="vedika-audio" hidden></audio>
-        </div>
     </main>
 
+    <!-- 🎮 Center Control (Standby) -->
+    <div id="standby-controls" class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+        <button id="go-live-btn" class="btn-premium pointer-events-auto mt-52">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+            Go Live
+        </button>
+    </div>
+
+    <!-- 🎮 Bottom Controls (Live Mode) -->
+    <div id="live-controls" class="controls-bar hidden-force">
+        <button id="pause-live-btn" class="control-btn" title="Pause Live">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        </button>
+        <button id="end-live-btn" class="control-btn end-call" title="End Live">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-7-7 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="23" y1="1" x2="1" y2="23"/></svg>
+        </button>
+    </div>
+
+    <audio id="vedika-audio" hidden></audio>
+
+    <!-- 🛠️ Core Logic -->
     <script type="module">
         import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
 
-        // --- Cache Memory (Local Storage) Logic for Welcome Screen ---
         const welcomeScreen = document.getElementById('welcome-screen');
         const startNowBtn = document.getElementById('start-now-btn');
+        const orb = document.getElementById('vedika-orb');
+        const orbStatus = document.getElementById('orb-status');
+        
+        const standbyControls = document.getElementById('standby-controls');
+        const goLiveBtn = document.getElementById('go-live-btn');
+        const liveControls = document.getElementById('live-controls');
+        const pauseLiveBtn = document.getElementById('pause-live-btn');
+        const endLiveBtn = document.getElementById('end-live-btn');
+        
+        const toggleSubtitlesBtn = document.getElementById('toggle-subtitles-btn');
+        const subtitlesContainer = document.getElementById('subtitles-container');
+        const subtitleContent = document.getElementById('subtitle-content');
+        const audioPlayer = document.getElementById('vedika-audio');
 
-        // Check if user has visited before
+        let gradioClient = null;
+        let isLiveActive = false;
+        let isPaused = false;
+        let showSubtitles = false;
+        
+        let audioContext, analyser, microphone, scriptProcessor;
+        let mediaRecorder;
+        let audioChunks = [];
+        let isUserSpeaking = false;
+        let silenceTimer = null;
+        let isVedikaSpeaking = false;
+
+        // Cache Logic
         if (localStorage.getItem('vedikaWelcomeSeen') === 'true') {
             welcomeScreen.style.display = 'none';
         }
-
-        // Hide and save to cache on click
         startNowBtn.addEventListener('click', () => {
             welcomeScreen.style.opacity = '0';
             setTimeout(() => {
@@ -196,160 +320,243 @@
             }, 800);
         });
 
-        // --- App Variables ---
-        const recordBtn = document.getElementById('record-btn');
-        const actionStatus = document.getElementById('action-status');
-        const connectionDot = document.getElementById('connection-dot');
-        const connectionStatus = document.getElementById('connection-status');
-        const chatHistory = document.getElementById('chat-history');
-        const thinkingBox = document.getElementById('thinking-box');
-        const thinkingContent = document.getElementById('thinking-content');
-        const audioPlayer = document.getElementById('vedika-audio');
+        // Background / Tab Switch Protection (Bug Fix)
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                // User left the website tab
+                if (!audioPlayer.paused) {
+                    audioPlayer.pause(); // Stop voice immediately
+                }
+                // Automatically pause the live session to prevent background recording
+                if (isLiveActive && !isPaused) {
+                    pauseLiveBtn.click();
+                }
+            }
+        });
 
-        let mediaRecorder;
-        let audioChunks = [];
-        let isRecording = false;
-        let gradioClient = null;
-
-        // --- Connect to HF Space ---
+        // Initialize Server
         async function initClient() {
             try {
-                // Connecting to your specific Live Voice Space
+                orbStatus.innerText = "Connecting...";
                 gradioClient = await Client.connect("pateltraders55455/TTS");
-                connectionDot.classList.replace('bg-red-500', 'bg-green-500');
-                connectionStatus.innerText = "SERVER ONLINE";
+                orbStatus.innerText = "Standby";
             } catch (err) {
-                connectionDot.classList.replace('bg-green-500', 'bg-red-500');
-                connectionStatus.innerText = "CONNECTION FAILED";
-                console.error(err);
+                orbStatus.innerText = "Connection Failed";
+                console.error("Connection error:", err);
             }
         }
         initClient();
 
-        // --- Add Message to Chat History ---
-        function appendMessage(role, text, isUpdate = false) {
-            if (chatHistory.innerHTML.includes("System ready. Waiting")) {
-                chatHistory.innerHTML = "";
-            }
-
-            if (isUpdate) {
-                // If live updating, update the last AI message
-                const lastMsg = chatHistory.lastElementChild;
-                if (lastMsg && lastMsg.dataset.role === 'ai') {
-                    lastMsg.innerHTML = `<span class="font-bold text-white glow-text-white">Vedika:</span> <span class="text-gray-200">${text}</span>`;
-                    chatHistory.scrollTop = chatHistory.scrollHeight;
-                    return;
-                }
-            }
-
-            const msgDiv = document.createElement('div');
-            msgDiv.dataset.role = role;
-            msgDiv.className = `p-4 rounded-2xl ${role === 'user' ? 'bg-white/10 ml-8 border border-white/20' : 'bg-transparent mr-8'}`;
-            
-            const prefix = role === 'user' ? 'You' : 'Vedika';
-            const titleColor = role === 'user' ? 'text-gray-400' : 'text-white glow-text-white';
-            
-            msgDiv.innerHTML = `<span class="font-bold ${titleColor}">${prefix}:</span> <span class="text-gray-200">${text}</span>`;
-            chatHistory.appendChild(msgDiv);
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-        }
-
-        // --- Recording Logic ---
-        recordBtn.addEventListener('click', async () => {
-            if (!gradioClient) return alert("Server not connected yet.");
-
-            if (!isRecording) {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
-                    audioChunks = [];
-
-                    mediaRecorder.ondataavailable = e => {
-                        if (e.data.size > 0) audioChunks.push(e.data);
-                    };
-
-                    mediaRecorder.onstop = sendToVedikaLive;
-
-                    mediaRecorder.start();
-                    isRecording = true;
-                    
-                    recordBtn.classList.add('recording');
-                    actionStatus.innerText = "Listening...";
-                    actionStatus.classList.add('glow-text-white');
-                } catch (err) {
-                    alert("Microphone permission denied.");
-                }
+        // Subtitles Toggle
+        toggleSubtitlesBtn.addEventListener('click', () => {
+            showSubtitles = !showSubtitles;
+            if (showSubtitles) {
+                subtitlesContainer.classList.add('visible');
+                toggleSubtitlesBtn.innerText = "Hide Subtitles";
+                toggleSubtitlesBtn.classList.replace('text-gray-400', 'text-white');
             } else {
-                mediaRecorder.stop();
-                mediaRecorder.stream.getTracks().forEach(track => track.stop());
-                isRecording = false;
-                
-                recordBtn.classList.remove('recording');
-                actionStatus.innerText = "Processing...";
+                subtitlesContainer.classList.remove('visible');
+                toggleSubtitlesBtn.innerText = "Show Subtitles";
+                toggleSubtitlesBtn.classList.replace('text-white', 'text-gray-400');
             }
         });
 
-        // --- Live Streaming API Call ---
-        async function sendToVedikaLive() {
+        function updateSubtitle(text, prefix = "") {
+            if (text) {
+                const prefixColor = prefix === "Vedika:" ? "text-orange-400" : "text-gray-400";
+                subtitleContent.innerHTML = `<span class="font-bold ${prefixColor}">${prefix}</span> ${text}`;
+            }
+        }
+
+        // Voice Activity Detection & Dynamic Orb Sizing
+        async function startVAD() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                microphone = audioContext.createMediaStreamSource(stream);
+                scriptProcessor = audioContext.createScriptProcessor(2048, 1, 1);
+
+                analyser.smoothingTimeConstant = 0.8;
+                analyser.fftSize = 1024;
+                microphone.connect(analyser);
+                analyser.connect(scriptProcessor);
+                scriptProcessor.connect(audioContext.destination);
+
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+                mediaRecorder.onstop = sendAudioToBackend;
+
+                scriptProcessor.onaudioprocess = function() {
+                    if (isPaused || isVedikaSpeaking || !isLiveActive) {
+                        // Reset orb scale when not listening
+                        if (!isVedikaSpeaking && !orb.className.includes('processing')) {
+                            orb.style.transform = `scale(1)`;
+                        }
+                        return;
+                    }
+
+                    const array = new Uint8Array(analyser.frequencyBinCount);
+                    analyser.getByteFrequencyData(array);
+                    let values = 0;
+                    for (let i = 0; i < array.length; i++) { values += array[i]; }
+                    const averageVolume = values / array.length;
+
+                    // Dynamic Voice Movement (Scaling Orb based on volume)
+                    if (isUserSpeaking) {
+                        // Math logic to make it pulse smoothly based on voice intensity
+                        const scale = 1 + (averageVolume / 100); 
+                        orb.style.transform = `scale(${Math.min(scale, 1.5)})`; // Max scale 1.5
+                    }
+
+                    // Volume threshold to detect start of speech
+                    if (averageVolume > 15) {
+                        if (!isUserSpeaking) {
+                            isUserSpeaking = true;
+                            audioChunks = [];
+                            mediaRecorder.start();
+                            
+                            // Remove static animation, we use JS transform now
+                            orb.className = "orb"; 
+                            orbStatus.innerText = "Listening...";
+                            updateSubtitle("...", "You:");
+                        }
+                        clearTimeout(silenceTimer);
+                        silenceTimer = setTimeout(handleSilence, 1500);
+                    }
+                };
+            } catch (err) {
+                alert("Microphone access is required for Live mode.");
+                endLive();
+            }
+        }
+
+        function handleSilence() {
+            if (isUserSpeaking && !isVedikaSpeaking && !isPaused && isLiveActive) {
+                isUserSpeaking = false;
+                orb.style.transform = `scale(1)`; // Reset size
+                orb.className = "orb processing";
+                orbStatus.innerText = "Processing...";
+                
+                // Requested Text Update
+                updateSubtitle("Analyzing the command...", "System:");
+                
+                mediaRecorder.stop();
+            }
+        }
+
+        function stopVAD() {
+            if (scriptProcessor) scriptProcessor.disconnect();
+            if (analyser) analyser.disconnect();
+            if (microphone) microphone.disconnect();
+            if (audioContext) audioContext.close();
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+        }
+
+        // Send to Backend
+        async function sendAudioToBackend() {
+            if (!gradioClient || audioChunks.length === 0) return;
+            
+            isVedikaSpeaking = true; 
             const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
             const audioFile = new File([audioBlob], "live_input.wav", { type: 'audio/wav' });
 
-            appendMessage('user', "Audio sent...");
-            thinkingBox.style.display = 'block'; // Show Thinking Box
-            thinkingContent.innerText = "Analyzing waveform and generating context...";
-
             try {
-                // Using .submit() instead of .predict() for Live Streaming
-                const submission = gradioClient.submit("/process_all_in_one", {
-                    audio_filepath: audioFile, 
-                });
+                const submission = gradioClient.submit("/process_all_in_one", { audio_filepath: audioFile });
 
-                // Listen to live data stream
                 for await (const msg of submission) {
-                    if (msg.type === "data") {
+                    if (msg.type === "data" && isLiveActive && !isPaused) {
                         const outputData = msg.data;
-                        const audioResult = outputData[0]; // Final audio (null during streaming)
-                        const textLog = outputData[1];     // Live text
+                        const audioResult = outputData[0];
+                        const textLog = outputData[1];
 
-                        // Extract only Vedika's part from the log (split by 'Vedika:')
                         const parts = textLog.split("🔱 वेदिका:");
                         if (parts.length > 1) {
-                            const aiText = parts[1].trim();
-                            
-                            // Update Thinking Box parameters (simulated reasoning visibility)
-                            thinkingContent.innerText = "Decoding tokens...\nLength: " + aiText.length + " chars";
-
-                            appendMessage('ai', aiText, true);
-                        } else if (textLog.includes("🗣️ आपने कहा:")) {
-                            // Update user message accurately once STT is done
-                            const userText = textLog.split("🗣️ आपने कहा:")[1].split("\n")[0].trim();
-                            // Find the last user message and update it
-                            const allUserMsgs = document.querySelectorAll('[data-role="user"]');
-                            if (allUserMsgs.length > 0) {
-                                allUserMsgs[allUserMsgs.length - 1].innerHTML = `<span class="font-bold text-gray-400">You:</span> <span class="text-gray-200">${userText}</span>`;
-                            }
+                            updateSubtitle(parts[1].trim(), "Vedika:");
                         }
 
-                        // Play audio when final result arrives
                         if (audioResult) {
-                            thinkingBox.style.display = 'none'; // Hide thinking box when done
-                            actionStatus.innerText = "Speaking...";
+                            orb.className = "orb speaking";
+                            orbStatus.innerText = "Speaking...";
                             
                             audioPlayer.src = audioResult.url || audioResult;
                             audioPlayer.play();
                             
                             audioPlayer.onended = () => {
-                                actionStatus.innerText = "Tap to Speak";
+                                if (isLiveActive && !isPaused) {
+                                    isVedikaSpeaking = false;
+                                    orb.className = "orb";
+                                    orb.style.transform = `scale(1)`;
+                                    orbStatus.innerText = "Active";
+                                    updateSubtitle("Waiting for voice input...");
+                                }
                             };
                         }
                     }
                 }
             } catch (error) {
-                console.error("Streaming Error:", error);
-                actionStatus.innerText = "Error Occurred";
-                thinkingBox.style.display = 'none';
+                console.error(error);
+                orbStatus.innerText = "Error";
+                isVedikaSpeaking = false;
+                orb.className = "orb";
+                updateSubtitle("Connection error occurred.", "System:");
             }
         }
+
+        // Controls
+        goLiveBtn.addEventListener('click', () => {
+            if (!gradioClient) return alert("Server not connected.");
+            isLiveActive = true;
+            isPaused = false;
+            
+            standbyControls.classList.add('hidden-force');
+            liveControls.classList.remove('hidden-force');
+            
+            orb.className = "orb";
+            orbStatus.innerText = "Active";
+            updateSubtitle("Live session started. Start speaking...");
+            
+            startVAD();
+        });
+
+        pauseLiveBtn.addEventListener('click', () => {
+            isPaused = !isPaused;
+            if (isPaused) {
+                pauseLiveBtn.classList.add('active-pause');
+                pauseLiveBtn.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+                orb.className = "orb";
+                orb.style.transform = `scale(1)`;
+                orbStatus.innerText = "Paused";
+                audioPlayer.pause();
+                updateSubtitle("Session paused. Press play to resume.", "System:");
+            } else {
+                pauseLiveBtn.classList.remove('active-pause');
+                pauseLiveBtn.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
+                orbStatus.innerText = "Active";
+                if (!isVedikaSpeaking) updateSubtitle("Waiting for voice input...");
+            }
+        });
+
+        function endLive() {
+            isLiveActive = false;
+            isVedikaSpeaking = false;
+            stopVAD();
+            audioPlayer.pause();
+            
+            liveControls.classList.add('hidden-force');
+            standbyControls.classList.remove('hidden-force');
+            
+            orb.className = "orb";
+            orb.style.transform = `scale(1)`;
+            orbStatus.innerText = "Standby";
+            updateSubtitle("Session ended.", "System:");
+            
+            isPaused = false;
+            pauseLiveBtn.classList.remove('active-pause');
+            pauseLiveBtn.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
+        }
+
+        endLiveBtn.addEventListener('click', endLive);
     </script>
 </body>
 </html>
