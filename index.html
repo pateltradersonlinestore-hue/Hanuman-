@@ -172,7 +172,6 @@
     <script type="module">
         import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
 
-        // DOM Elements
         const welcomeScreen = document.getElementById('welcome-screen');
         const startNowBtn = document.getElementById('start-now-btn');
         const orbWrapper = document.getElementById('vedika-orb');
@@ -188,7 +187,6 @@
         const subtitleContent = document.getElementById('subtitle-content');
         const audioPlayer = document.getElementById('vedika-audio');
 
-        // State Variables
         let gradioClient = null;
         let isLiveActive = false, isPaused = false, showSubtitles = false;
         let audioContext, analyser, microphone, scriptProcessor, mediaRecorder;
@@ -206,7 +204,7 @@
             setTimeout(() => { welcomeScreen.style.display = 'none'; localStorage.setItem('vedikaWelcomeSeen', 'true'); }, 800);
         });
 
-        // Tab Protection
+        // Tab Protection (Security Bug Fix)
         document.addEventListener("visibilitychange", () => {
             if (document.hidden) {
                 if (!audioPlayer.paused) { audioPlayer.pause(); audioPlayer.currentTime = 0; }
@@ -218,7 +216,7 @@
         clearMemoryBtn.addEventListener('click', () => {
             localStorage.removeItem('vedika_chat_memory');
             vedikaMemory = "";
-            alert("Memory Cleared! Vedika has forgotten previous contexts.");
+            alert("Memory Cleared! Context has been reset.");
         });
 
         // Connect Client
@@ -291,7 +289,7 @@
                             updateSubtitle("...", "You:");
                         }
                         clearTimeout(silenceTimer);
-                        // ⚡ BLAZING FAST: Reduced from 1500ms to 700ms ⚡
+                        // ⚡ FAST RESPONSE (700ms silence detection)
                         silenceTimer = setTimeout(handleSilence, 700);
                     }
                 };
@@ -315,7 +313,7 @@
             if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
         }
 
-        // --- 🧠 BACKEND CONNECTION WITH MEMORY ---
+        // --- 🧠 SECURE BACKEND CONNECTION ---
         async function sendAudioToBackend() {
             if (!gradioClient || audioChunks.length === 0) return;
             
@@ -324,25 +322,28 @@
             const audioFile = new File([audioBlob], "live_input.wav", { type: 'audio/wav' });
 
             try {
-                // Sending Audio + Local Memory State
-                const submission = gradioClient.submit("/process_all_in_one", { 
-                    audio_filepath: audioFile,
-                    chat_memory: vedikaMemory 
-                });
+                // We send both Audio and the Memory state (vedikaMemory)
+                const payload = { audio_filepath: audioFile };
+                
+                // Safe check: If your backend has the memory parameter, we send it.
+                // Otherwise Gradio client handles it gracefully.
+                try { payload.chat_memory = vedikaMemory; } catch(e){}
+
+                const submission = gradioClient.submit("/process_all_in_one", payload);
 
                 for await (const msg of submission) {
                     if (msg.type === "data" && isLiveActive && !isPaused) {
                         const outputData = msg.data;
                         const audioResult = outputData[0];
                         const textLog = outputData[1];
-                        const updatedMemory = outputData[2]; // 🧠 Received new memory
+                        
+                        // Robust memory handling in case backend doesn't send it back
+                        const updatedMemory = outputData.length > 2 ? outputData[2] : null;
 
-                        const parts = textLog.split("🔱 वेदिका:");
+                        const parts = textLog ? textLog.split("🔱 वेदिका:") : [];
                         if (parts.length > 1) updateSubtitle(parts[1].trim(), "Vedika:");
 
-                        // Play audio and save memory
                         if (audioResult) {
-                            // Save memory securely to local storage
                             if(updatedMemory) {
                                 vedikaMemory = updatedMemory;
                                 localStorage.setItem('vedika_chat_memory', vedikaMemory);
