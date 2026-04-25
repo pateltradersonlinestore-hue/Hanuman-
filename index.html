@@ -18,7 +18,7 @@
             position: relative;
         }
 
-        /* 🌟 Interactive Canvas for Stars */
+        /* 🌟 Interactive 3D Canvas */
         #starfield {
             position: absolute;
             top: 0;
@@ -43,7 +43,6 @@
         .glow-text { text-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
         .glow-accent { text-shadow: 0 0 15px rgba(255, 140, 0, 0.8); }
 
-        /* 📱 Layout Optimizations (Mobile & Desktop) */
         .main-wrapper {
             display: flex;
             flex-direction: column;
@@ -52,7 +51,7 @@
             margin: 0 auto;
         }
 
-        /* 💬 Chat History */
+        /* 💬 Chat Subtitles (Hidden by default) */
         .chat-container { 
             flex-grow: 1; 
             overflow-y: auto; 
@@ -61,12 +60,22 @@
             flex-direction: column; 
             gap: 20px; 
             scroll-behavior: smooth;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px) scale(0.98);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        .chat-container.show-subtitles {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+        }
+
         .chat-container::-webkit-scrollbar { width: 4px; }
         .chat-container::-webkit-scrollbar-thumb { background: rgba(255, 140, 0, 0.3); border-radius: 10px; }
 
         .message { max-width: 90%; padding: 16px 24px; border-radius: 20px; font-size: 1.05rem; line-height: 1.6; letter-spacing: 0.3px;}
-        @media (min-width: 768px) { .message { max-width: 75%; } } /* Desktop adjustment */
+        @media (min-width: 768px) { .message { max-width: 75%; } }
         
         .msg-user { align-self: flex-end; background: linear-gradient(135deg, rgba(255, 140, 0, 0.15), rgba(255, 140, 0, 0.05)); border: 1px solid rgba(255, 140, 0, 0.3); color: #fff; border-bottom-right-radius: 4px;}
         .msg-ai { align-self: flex-start; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #e5e5ea; border-bottom-left-radius: 4px;}
@@ -77,8 +86,8 @@
             border: 2px solid rgba(255, 255, 255, 0.1); 
             color: #fff; 
             border-radius: 50%; 
-            width: 75px; 
-            height: 75px; 
+            width: 85px; 
+            height: 85px; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
@@ -87,7 +96,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             position: relative;
         }
-        @media (min-width: 768px) { .mic-btn { width: 90px; height: 90px; } }
+        @media (min-width: 768px) { .mic-btn { width: 100px; height: 100px; } }
 
         .mic-btn:hover { transform: scale(1.05); border-color: rgba(255, 140, 0, 0.5); }
         .mic-btn.recording { 
@@ -97,7 +106,6 @@
             animation: pulse-red 1.5s infinite;
         }
         
-        /* Auto-stop progress ring */
         .progress-ring {
             position: absolute;
             top: -5px; left: -5px; right: -5px; bottom: -5px;
@@ -107,7 +115,7 @@
             opacity: 0;
             transition: transform 0.1s linear;
         }
-        .mic-btn.recording .progress-ring { opacity: 1; animation: spin 5s linear infinite; }
+        .mic-btn.recording .progress-ring { opacity: 1; animation: spin 2s linear infinite; }
 
         @keyframes pulse-red {
             0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.5); }
@@ -116,13 +124,41 @@
         }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
+        /* 🎛️ Waveform Animation (Morphing) */
+        .waveform {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 40px;
+        }
+        .waveform .bar {
+            width: 4px;
+            background-color: #ff8c00;
+            border-radius: 2px;
+            animation: bounce 1s infinite ease-in-out;
+        }
+        .waveform .bar:nth-child(1) { height: 10px; animation-delay: 0s; }
+        .waveform .bar:nth-child(2) { height: 20px; animation-delay: 0.2s; }
+        .waveform .bar:nth-child(3) { height: 35px; animation-delay: 0.4s; }
+        .waveform .bar:nth-child(4) { height: 20px; animation-delay: 0.6s; }
+        .waveform .bar:nth-child(5) { height: 10px; animation-delay: 0.8s; }
+
+        @keyframes bounce {
+            0%, 100% { transform: scaleY(0.5); }
+            50% { transform: scaleY(1.5); box-shadow: 0 0 10px #ff8c00; }
+        }
+
+        .icon-transition { transition: opacity 0.3s ease; }
+        .hidden-icon { opacity: 0; position: absolute; pointer-events: none; }
+
         /* 🎬 Screens */
         #intro-screen {
             position: absolute; inset: 0; z-index: 50;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             background: rgba(3, 3, 5, 0.85);
             backdrop-filter: blur(10px);
-            transition: opacity 0.8s ease;
+            transition: opacity 0.5s ease;
         }
         
         .start-btn {
@@ -145,20 +181,37 @@
         
         /* Status Text */
         .status-display {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 500;
             letter-spacing: 1px;
-            height: 24px;
+            height: 28px;
             color: #ff8c00;
             transition: opacity 0.3s;
             text-align: center;
         }
 
+        /* Subtitle Toggle */
+        .toggle-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+        .toggle-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+        .toggle-btn.active { background: rgba(255, 140, 0, 0.2); border-color: rgba(255, 140, 0, 0.5); color: #ff8c00; }
+
     </style>
 </head>
 <body>
 
-    <!-- 🌟 Background Canvas for Moving Stars -->
+    <!-- 🌟 3D Warp Starfield Canvas -->
     <canvas id="starfield"></canvas>
 
     <!-- 🎬 Intro Screen -->
@@ -170,8 +223,8 @@
         <p id="connecting-text" class="mt-6 text-orange-400 font-bold tracking-widest hidden animate-pulse">Calling Vedika...</p>
     </div>
 
-    <!-- 📱 Main Interface Wrapper -->
-    <div id="main-interface" class="main-wrapper opacity-0 transition-opacity duration-1000">
+    <!-- 📱 Main Interface -->
+    <div id="main-interface" class="main-wrapper opacity-0 transition-opacity duration-700">
         
         <!-- Header -->
         <header class="w-full p-5 glass-layer border-t-0 border-l-0 border-r-0 md:rounded-b-2xl flex justify-between items-center">
@@ -187,30 +240,39 @@
             </div>
         </header>
 
-        <!-- Chat Area -->
+        <!-- Dynamic Subtitle Area -->
         <main id="chat-container" class="chat-container glass-layer my-2 mx-0 md:mx-4 md:rounded-2xl border-x-0 md:border-x">
-            <!-- Messages will be injected here -->
+            <!-- Messages -->
         </main>
 
         <!-- Control Area -->
-        <footer class="p-6 glass-layer border-b-0 border-l-0 border-r-0 md:rounded-t-2xl flex flex-col justify-center items-center gap-4">
+        <footer class="p-6 glass-layer border-b-0 border-l-0 border-r-0 md:rounded-t-2xl flex flex-col justify-center items-center gap-4 relative z-20">
             
+            <button id="subtitle-toggle" class="toggle-btn">Show Subtitles</button>
+
             <div id="status-text" class="status-display opacity-0"></div>
 
-            <div class="relative">
-                <button id="mic-btn" class="mic-btn" title="Tap to Speak">
+            <div class="relative mt-2 mb-2">
+                <button id="mic-btn" class="mic-btn" title="Microphone">
                     <div class="progress-ring"></div>
-                    <svg id="mic-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    
+                    <!-- SVG Mic Icon -->
+                    <svg id="mic-icon" class="icon-transition" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
                         <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
                         <line x1="12" y1="19" x2="12" y2="22"></line>
                     </svg>
+
+                    <!-- Waveform Animation (Hidden by default) -->
+                    <div id="waveform" class="waveform icon-transition hidden-icon">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
                 </button>
             </div>
-            
-            <p id="instruction-text" class="text-gray-500 text-xs tracking-wider">Tap mic and speak. Auto-sends after 5s of silence.</p>
-            
-            <button id="clear-btn" class="text-gray-600 hover:text-red-500 text-[10px] uppercase tracking-widest mt-2 transition-colors">Clear Memory</button>
             
             <audio id="audio-player" class="hidden" autoplay></audio>
         </footer>
@@ -227,58 +289,70 @@
         const connectingText = document.getElementById('connecting-text');
         
         const micBtn = document.getElementById('mic-btn');
+        const micIcon = document.getElementById('mic-icon');
+        const waveform = document.getElementById('waveform');
+        
         const statusText = document.getElementById('status-text');
-        const instructionText = document.getElementById('instruction-text');
         const chatContainer = document.getElementById('chat-container');
+        const subtitleToggle = document.getElementById('subtitle-toggle');
         const audioPlayer = document.getElementById('audio-player');
-        const clearBtn = document.getElementById('clear-btn');
 
         // State Variables
         let client;
         let isRecording = false;
         let mediaRecorder;
         let audioChunks = [];
-        let statusInterval;
         let audioContext;
         let analyser;
         let microphone;
         let animationFrameId;
         
-        // Voice Activity Detection (VAD) State
+        // VAD
         let silenceTimer = null;
         let isSpeaking = false;
-        const SILENCE_THRESHOLD = 5000; // 5 seconds of silence
-        const VOLUME_THRESHOLD = 15; // Tuning required based on mic sensitivity
+        const SILENCE_THRESHOLD = 2000; // 2 seconds
+        const VOLUME_THRESHOLD = 15; 
 
-        // Physics State for Stars (Audio Reactive)
+        // Physics State for Stars
         let currentAudioVolume = 0;
+        let isWarpSpeed = false; // Trigger for 3D forward movement
 
         // Persistent History
         let chatHistory = JSON.parse(localStorage.getItem('vedikaHistory')) || [];
 
-        // Animation Stages
-        const thinkingStages = [
-            "Vedika is thinking...", 
-            "Analyzing the topic...", 
-            "Generating the response..."
-        ];
+        // Timers for Status Text
+        let thinkingTimer1, thinkingTimer2;
 
-        // --- 🌌 Canvas Starfield Logic (Audio Reactive) ---
+        // --- Subtitle Toggle Logic ---
+        let showSubtitles = false;
+        subtitleToggle.addEventListener('click', () => {
+            showSubtitles = !showSubtitles;
+            if (showSubtitles) {
+                subtitleToggle.innerText = "Hide Subtitles";
+                subtitleToggle.classList.add('active');
+                chatContainer.classList.add('show-subtitles');
+            } else {
+                subtitleToggle.innerText = "Show Subtitles";
+                subtitleToggle.classList.remove('active');
+                chatContainer.classList.remove('show-subtitles');
+            }
+        });
+
+        // --- 🌌 3D Warp Starfield Logic ---
         const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
         let stars = [];
+        const numStars = 600;
 
         function initCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             stars = [];
-            for (let i = 0; i < 200; i++) {
+            for (let i = 0; i < numStars; i++) {
                 stars.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    radius: Math.random() * 1.5,
-                    baseSpeed: Math.random() * 0.5 + 0.1,
-                    alpha: Math.random()
+                    x: (Math.random() - 0.5) * 3000,
+                    y: (Math.random() - 0.5) * 3000,
+                    z: Math.random() * 2000
                 });
             }
         }
@@ -286,30 +360,47 @@
         window.addEventListener('resize', initCanvas);
 
         function drawStars() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#ffffff';
+            // Dark trail effect
+            ctx.fillStyle = 'rgba(3, 3, 5, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Speed multiplier based on voice volume
-            let speedMultiplier = 1 + (currentAudioVolume / 10);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Normal speed based on volume, Warp speed during thinking
+            let speed = isWarpSpeed ? 40 : (1 + (currentAudioVolume / 5));
+
+            ctx.fillStyle = '#ffffff';
 
             stars.forEach(star => {
-                ctx.globalAlpha = star.alpha * (0.5 + currentAudioVolume/50);
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.radius + (currentAudioVolume/40), 0, Math.PI * 2);
-                ctx.fill();
+                star.z -= speed;
 
-                // Move stars upwards
-                star.y -= star.baseSpeed * speedMultiplier;
+                // Reset star if it passes the viewer
+                if (star.z <= 0) {
+                    star.x = (Math.random() - 0.5) * 3000;
+                    star.y = (Math.random() - 0.5) * 3000;
+                    star.z = 2000;
+                }
+
+                // 3D to 2D projection
+                const k = 800 / star.z;
+                const px = star.x * k + centerX;
+                const py = star.y * k + centerY;
                 
-                // Wrap around
-                if (star.y < 0) {
-                    star.y = canvas.height;
-                    star.x = Math.random() * canvas.width;
+                // Opacity & size based on depth
+                const size = Math.max(0.1, (2000 - star.z) / 800);
+                const opacity = Math.min(1, (2000 - star.z) / 1000);
+
+                if (px > 0 && px < canvas.width && py > 0 && py < canvas.height) {
+                    ctx.globalAlpha = opacity;
+                    ctx.beginPath();
+                    ctx.arc(px, py, size, 0, Math.PI * 2);
+                    ctx.fill();
                 }
             });
             requestAnimationFrame(drawStars);
         }
-        drawStars(); // Start infinite loop
+        drawStars();
 
         // --- 🎬 Intro Flow & API Connection ---
         startBtn.addEventListener('click', async () => {
@@ -317,21 +408,20 @@
             connectingText.classList.remove('hidden');
 
             try {
-                // Connect to server
                 client = await Client.connect("pateltraders55455/Vedika-music-preview");
-                
-                // Request Mic permissions early to setup visualizer
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 setupAudioVisualizer(stream);
                 
-                // Transition to Main UI
                 introScreen.classList.add('hidden-screen');
                 setTimeout(() => {
                     introScreen.style.display = 'none';
                     mainInterface.classList.remove('opacity-0');
                     mainInterface.classList.add('opacity-100');
-                    renderHistory(true); // true means show welcome message
-                }, 800);
+                    renderHistory(true);
+                    
+                    // Auto-start recording
+                    startRecording(stream); 
+                }, 400);
 
             } catch (error) {
                 console.error("Connection Failed:", error);
@@ -341,7 +431,6 @@
             }
         });
 
-        // --- Audio Visualizer & VAD Setup ---
         function setupAudioVisualizer(stream) {
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
             analyser = audioContext.createAnalyser();
@@ -358,19 +447,18 @@
                 for(let i = 0; i < bufferLength; i++) { sum += dataArray[i]; }
                 currentAudioVolume = sum / bufferLength;
 
-                // VAD Logic: If recording and user is speaking
                 if (isRecording) {
                     if (currentAudioVolume > VOLUME_THRESHOLD) {
                         isSpeaking = true;
-                        // Reset the silence timer
                         clearTimeout(silenceTimer);
                         silenceTimer = setTimeout(stopRecordingAndSend, SILENCE_THRESHOLD);
                         statusText.innerText = "Listening...";
-                    } else if (isSpeaking && currentAudioVolume <= VOLUME_THRESHOLD) {
-                        // User went quiet, timer is ticking...
+                        statusText.style.opacity = "1";
+                    } else if (!isSpeaking) {
+                        statusText.style.opacity = "0";
                     }
                 } else {
-                    currentAudioVolume = 0; // Reset visualizer if not recording
+                    currentAudioVolume = 0;
                 }
 
                 animationFrameId = requestAnimationFrame(monitorAudio);
@@ -378,12 +466,11 @@
             monitorAudio();
         }
 
-        // --- 💬 UI Functions ---
+        // --- 💬 Chat Functions ---
         function appendMessage(role, text) {
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${role === 'user' ? 'msg-user' : 'msg-ai'}`;
-            let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            msgDiv.innerHTML = formattedText;
+            msgDiv.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             chatContainer.appendChild(msgDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
@@ -391,57 +478,71 @@
         function renderHistory(isInitial = false) {
             chatContainer.innerHTML = '';
             if (chatHistory.length === 0) {
-                // Default English welcome message
-                appendMessage('ai', "Hello, how can I assist you today?");
+                appendMessage('ai', "Vedika is live. Please ask anything.");
                 if(isInitial) {
                     statusText.innerText = "Vedika is live. Please ask anything.";
                     statusText.style.opacity = "1";
-                    setTimeout(() => { if(!isRecording) statusText.style.opacity = "0"; }, 4000);
+                    setTimeout(() => { if(!isRecording) statusText.style.opacity = "0"; }, 3000);
                 }
             } else {
                 chatHistory.forEach(msg => appendMessage(msg.role, msg.content));
             }
         }
 
-        // --- ⚙️ State Animations ---
+        // --- ⚙️ Morphing & Timing State ---
         function startThinkingAnimation() {
-            let i = 0;
-            statusText.innerText = thinkingStages[0];
-            statusText.style.opacity = "1";
-            micBtn.style.pointerEvents = 'none'; // Disable mic while waiting
-            micBtn.style.opacity = '0.5';
+            // 1. Activate Warp Speed Stars
+            isWarpSpeed = true;
             
-            statusInterval = setInterval(() => {
-                i = (i + 1) % thinkingStages.length;
-                statusText.innerText = thinkingStages[i];
-            }, 1800);
+            // 2. Morph Mic to Waveform
+            micIcon.classList.add('hidden-icon');
+            waveform.classList.remove('hidden-icon');
+            micBtn.style.pointerEvents = 'none';
+
+            // 3. Exact 3-second timing sequence
+            statusText.innerText = "Vedika is thinking...";
+            statusText.style.opacity = "1";
+
+            thinkingTimer1 = setTimeout(() => {
+                statusText.innerText = "Analyzing the topic...";
+            }, 3000); // After 3 seconds
+
+            thinkingTimer2 = setTimeout(() => {
+                statusText.innerText = "Generating the response...";
+            }, 6000); // After 6 seconds (3s after analyzing)
         }
 
         function stopThinkingAnimation() {
-            clearInterval(statusInterval);
+            isWarpSpeed = false;
+            
+            clearTimeout(thinkingTimer1);
+            clearTimeout(thinkingTimer2);
+            
             statusText.style.opacity = "0";
+            
+            // Revert Waveform to Mic
+            waveform.classList.add('hidden-icon');
+            micIcon.classList.remove('hidden-icon');
             micBtn.style.pointerEvents = 'auto';
-            micBtn.style.opacity = '1';
         }
 
-        // --- 🎤 Recording Logic ---
+        // --- 🎤 Recording ---
         micBtn.addEventListener('click', async () => {
             if (isRecording) {
-                // Manual stop fallback
                 stopRecordingAndSend();
             } else {
-                startRecording();
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                startRecording(stream);
             }
         });
 
-        async function startRecording() {
+        async function startRecording(existingStream = null) {
             try {
-                // Ensure audio context is active (browser policy)
                 if(audioContext && audioContext.state === 'suspended') {
                     await audioContext.resume();
                 }
 
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const stream = existingStream || await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
 
@@ -452,13 +553,9 @@
                 isRecording = true;
                 isSpeaking = false;
                 
-                // UI Updates
                 micBtn.classList.add('recording');
-                statusText.innerText = "Waiting for your voice...";
-                statusText.style.opacity = "1";
-                instructionText.innerText = "Speak now. Auto-sends when you pause.";
                 
-                // Safety timeout: If user clicks but never speaks, stop after 10s
+                // Fallback timeout
                 silenceTimer = setTimeout(stopRecordingAndSend, 10000);
 
             } catch (err) {
@@ -471,20 +568,18 @@
             if (!isRecording) return;
             clearTimeout(silenceTimer);
             isRecording = false;
-            currentAudioVolume = 0; // Stop stars from reacting immediately
-            mediaRecorder.stop(); // Triggers onstop -> processAudioBlob
-            
+            currentAudioVolume = 0;
+            mediaRecorder.stop(); 
             micBtn.classList.remove('recording');
-            instructionText.innerText = "Tap mic and speak. Auto-sends after 5s of silence.";
         }
 
-        // --- 🚀 Send to Server ---
+        // --- 🚀 Process & Send ---
         async function processAudioBlob() {
             const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
             
-            // If blob is too small (e.g., clicked start/stop instantly), ignore
             if (audioBlob.size < 1000) {
                 statusText.innerText = "Audio too short.";
+                statusText.style.opacity = "1";
                 setTimeout(() => statusText.style.opacity = "0", 2000);
                 return;
             }
@@ -502,13 +597,11 @@
                     const audioUrl = data[0];
                     const newHistory = data[2];
 
-                    // Play Audio
                     if (audioUrl) {
                         audioPlayer.src = typeof audioUrl === 'object' ? audioUrl.url : audioUrl;
                         audioPlayer.play();
                     }
 
-                    // Update History
                     if (newHistory && Array.isArray(newHistory)) {
                         chatHistory = newHistory;
                         localStorage.setItem('vedikaHistory', JSON.stringify(chatHistory));
@@ -517,20 +610,18 @@
                 }
             } catch (error) {
                 console.error("API Error:", error);
-                appendMessage('ai', "I apologize, there was a technical error processing your request.");
+                appendMessage('ai', "I apologize, there was a technical error.");
             } finally {
                 stopThinkingAnimation();
+                
+                audioPlayer.onended = async () => {
+                     setTimeout(async () => {
+                         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                         startRecording(stream);
+                     }, 1000); 
+                };
             }
         }
-
-        // --- 🗑️ Memory Management ---
-        clearBtn.addEventListener('click', () => {
-            if(confirm("Are you sure you want to clear all memory?")) {
-                chatHistory = [];
-                localStorage.removeItem('vedikaHistory');
-                renderHistory();
-            }
-        });
 
     </script>
 </body>
