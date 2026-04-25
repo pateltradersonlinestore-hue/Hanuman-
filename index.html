@@ -95,6 +95,7 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             position: relative;
+            z-index: 30;
         }
         @media (min-width: 768px) { .mic-btn { width: 100px; height: 100px; } }
 
@@ -190,11 +191,18 @@
             text-align: center;
         }
 
-        /* Subtitle Toggle */
-        .toggle-btn {
+        /* Control Buttons (Toggle & Clear) */
+        .control-btns-wrapper {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            z-index: 20;
+            position: relative;
+        }
+
+        .toggle-btn, .clear-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #aaa;
             padding: 8px 16px;
             border-radius: 20px;
             font-size: 0.75rem;
@@ -202,10 +210,14 @@
             letter-spacing: 1px;
             cursor: pointer;
             transition: all 0.3s;
-            margin-bottom: 10px;
         }
+        
+        .toggle-btn { color: #aaa; }
         .toggle-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
-        .toggle-btn.active { background: rgba(255, 140, 0, 0.2); border-color: rgba(255, 140, 0, 0.5); color: #ff8c00; }
+        .toggle-btn.active { background: rgba(255, 140, 0, 0.15); border-color: rgba(255, 140, 0, 0.4); color: #ff8c00; }
+
+        .clear-btn { color: #ff4b4b; border-color: rgba(255, 75, 75, 0.2); }
+        .clear-btn:hover { background: rgba(255, 75, 75, 0.15); color: #ff4b4b; border-color: #ff4b4b; box-shadow: 0 0 15px rgba(255, 75, 75, 0.3); }
 
     </style>
 </head>
@@ -248,7 +260,10 @@
         <!-- Control Area -->
         <footer class="p-6 glass-layer border-b-0 border-l-0 border-r-0 md:rounded-t-2xl flex flex-col justify-center items-center gap-4 relative z-20">
             
-            <button id="subtitle-toggle" class="toggle-btn">Show Subtitles</button>
+            <div class="control-btns-wrapper">
+                <button id="subtitle-toggle" class="toggle-btn">Show Subtitles</button>
+                <button id="clear-btn" class="clear-btn">Clear History</button>
+            </div>
 
             <div id="status-text" class="status-display opacity-0"></div>
 
@@ -295,6 +310,7 @@
         const statusText = document.getElementById('status-text');
         const chatContainer = document.getElementById('chat-container');
         const subtitleToggle = document.getElementById('subtitle-toggle');
+        const clearBtn = document.getElementById('clear-btn');
         const audioPlayer = document.getElementById('audio-player');
 
         // State Variables
@@ -315,9 +331,9 @@
 
         // Physics State for Stars
         let currentAudioVolume = 0;
-        let isWarpSpeed = false; // Trigger for 3D forward movement
+        let isWarpSpeed = false;
 
-        // Persistent History
+        // Persistent History (Caching Prevention)
         let chatHistory = JSON.parse(localStorage.getItem('vedikaHistory')) || [];
 
         // Timers for Status Text
@@ -336,6 +352,20 @@
                 subtitleToggle.classList.remove('active');
                 chatContainer.classList.remove('show-subtitles');
             }
+        });
+
+        // --- Clear History Logic ---
+        clearBtn.addEventListener('click', () => {
+            chatHistory = [];
+            localStorage.removeItem('vedikaHistory');
+            renderHistory(false);
+            
+            // Visual Feedback
+            statusText.innerText = "Memory Cleared Successfully.";
+            statusText.style.opacity = "1";
+            setTimeout(() => {
+                if(!isRecording && !isWarpSpeed) statusText.style.opacity = "0";
+            }, 2500);
         });
 
         // --- 🌌 3D Warp Starfield Logic ---
@@ -360,14 +390,12 @@
         window.addEventListener('resize', initCanvas);
 
         function drawStars() {
-            // Dark trail effect
             ctx.fillStyle = 'rgba(3, 3, 5, 0.3)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
 
-            // Normal speed based on volume, Warp speed during thinking
             let speed = isWarpSpeed ? 40 : (1 + (currentAudioVolume / 5));
 
             ctx.fillStyle = '#ffffff';
@@ -375,19 +403,16 @@
             stars.forEach(star => {
                 star.z -= speed;
 
-                // Reset star if it passes the viewer
                 if (star.z <= 0) {
                     star.x = (Math.random() - 0.5) * 3000;
                     star.y = (Math.random() - 0.5) * 3000;
                     star.z = 2000;
                 }
 
-                // 3D to 2D projection
                 const k = 800 / star.z;
                 const px = star.x * k + centerX;
                 const py = star.y * k + centerY;
                 
-                // Opacity & size based on depth
                 const size = Math.max(0.1, (2000 - star.z) / 800);
                 const opacity = Math.min(1, (2000 - star.z) / 1000);
 
@@ -419,7 +444,6 @@
                     mainInterface.classList.add('opacity-100');
                     renderHistory(true);
                     
-                    // Auto-start recording
                     startRecording(stream); 
                 }, 400);
 
@@ -482,7 +506,7 @@
                 if(isInitial) {
                     statusText.innerText = "Vedika is live. Please ask anything.";
                     statusText.style.opacity = "1";
-                    setTimeout(() => { if(!isRecording) statusText.style.opacity = "0"; }, 3000);
+                    setTimeout(() => { if(!isRecording && !isWarpSpeed) statusText.style.opacity = "0"; }, 3000);
                 }
             } else {
                 chatHistory.forEach(msg => appendMessage(msg.role, msg.content));
@@ -491,25 +515,22 @@
 
         // --- ⚙️ Morphing & Timing State ---
         function startThinkingAnimation() {
-            // 1. Activate Warp Speed Stars
             isWarpSpeed = true;
             
-            // 2. Morph Mic to Waveform
             micIcon.classList.add('hidden-icon');
             waveform.classList.remove('hidden-icon');
             micBtn.style.pointerEvents = 'none';
 
-            // 3. Exact 3-second timing sequence
             statusText.innerText = "Vedika is thinking...";
             statusText.style.opacity = "1";
 
             thinkingTimer1 = setTimeout(() => {
                 statusText.innerText = "Analyzing the topic...";
-            }, 3000); // After 3 seconds
+            }, 3000); 
 
             thinkingTimer2 = setTimeout(() => {
                 statusText.innerText = "Generating the response...";
-            }, 6000); // After 6 seconds (3s after analyzing)
+            }, 6000); 
         }
 
         function stopThinkingAnimation() {
@@ -520,7 +541,6 @@
             
             statusText.style.opacity = "0";
             
-            // Revert Waveform to Mic
             waveform.classList.add('hidden-icon');
             micIcon.classList.remove('hidden-icon');
             micBtn.style.pointerEvents = 'auto';
@@ -554,8 +574,6 @@
                 isSpeaking = false;
                 
                 micBtn.classList.add('recording');
-                
-                // Fallback timeout
                 silenceTimer = setTimeout(stopRecordingAndSend, 10000);
 
             } catch (err) {
