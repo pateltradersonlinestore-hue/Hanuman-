@@ -1,407 +1,361 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vedika Live - High Speed AI</title>
+    <title>वेदिका LIVE - स्वदेशी एआई</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* 🍎 Premium Apple Glassmorphism & Dark Aesthetic */
         body {
-            background-color: #000000;
+            background-color: #050505;
             color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             margin: 0;
             height: 100vh;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
-            background: radial-gradient(circle at top left, rgba(20, 25, 45, 0.4), transparent 50%),
-                        radial-gradient(circle at bottom right, rgba(0, 30, 40, 0.4), transparent 50%), #000000;
+            background: radial-gradient(circle at 10% 20%, rgba(25, 20, 45, 0.6), transparent 40%),
+                        radial-gradient(circle at 90% 80%, rgba(40, 20, 10, 0.6), transparent 40%), 
+                        url('https://www.transparenttextures.com/patterns/stardust.png'), #000000;
         }
 
-        .glow-text-white { text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 0 0 25px rgba(255, 255, 255, 0.3); }
+        .glow-text { text-shadow: 0 0 15px rgba(255, 140, 0, 0.8), 0 0 30px rgba(255, 255, 255, 0.4); }
 
-        #welcome-screen {
-            position: fixed; inset: 0;
-            background: radial-gradient(circle at center, #111 0%, #000 100%);
-            z-index: 9999; display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            transition: opacity 0.8s ease, visibility 0.8s;
-        }
-
-        .btn-premium {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #ffffff; padding: 14px 36px; border-radius: 50px;
-            font-size: 1rem; font-weight: 600; cursor: pointer;
-            transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1.5px;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            backdrop-filter: blur(10px);
-        }
-        .btn-premium:hover {
-            background: rgba(255, 255, 255, 0.9); color: #000000;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4); transform: translateY(-2px);
+        .glass-panel {
+            background: rgba(15, 15, 20, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border-radius: 24px;
         }
 
-        /* 🔮 The ChatGPT Style Sharp Fluid Orb */
-        .orb-container { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; margin: 0 auto; }
-        .orb-wrapper {
-            width: 180px; height: 180px; border-radius: 50%; position: relative; overflow: hidden; 
-            box-shadow: 0 0 40px rgba(255, 126, 0, 0.3);
-            transition: transform 0.1s ease-out, box-shadow 0.4s ease; will-change: transform;
-            -webkit-mask-image: -webkit-radial-gradient(white, black);
+        /* 💬 Chat History Scrollbar */
+        .chat-container { 
+            flex-grow: 1; 
+            overflow-y: auto; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+            scroll-behavior: smooth;
         }
-        .orb-fluid {
-            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: conic-gradient(from 0deg, #ff7e00 0%, #ffffff 25%, #ffb347 50%, #ffffff 75%, #ff7e00 100%);
-            filter: blur(15px); animation: spin-slow 8s linear infinite;
-        }
-        .orb-overlay { position: absolute; inset: 0; border-radius: 50%; box-shadow: inset 0 0 25px rgba(0,0,0,0.4); pointer-events: none; }
-        .orb-ripple { position: absolute; width: 180px; height: 180px; border-radius: 50%; border: 2px solid #ffffff; opacity: 0; pointer-events: none; }
+        .chat-container::-webkit-scrollbar { width: 4px; }
+        .chat-container::-webkit-scrollbar-thumb { background: rgba(255, 140, 0, 0.5); border-radius: 10px; }
 
-        .orb-wrapper.processing .orb-fluid {
-            animation: spin-fast 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-            background: conic-gradient(from 0deg, #ff8c00 0%, #ffffff 30%, #ff6600 60%, #ffffff 80%, #ff8c00 100%);
-        }
-        .orb-wrapper.speaking { box-shadow: 0 0 60px rgba(255, 255, 255, 0.5); }
-        .orb-wrapper.speaking ~ .orb-ripple { animation: ripple-out 1.5s infinite ease-out; }
+        .message { max-width: 85%; padding: 16px 24px; border-radius: 20px; font-size: 1.05rem; line-height: 1.6; letter-spacing: 0.3px;}
+        .msg-user { align-self: flex-end; background: linear-gradient(135deg, rgba(255, 140, 0, 0.15), rgba(255, 140, 0, 0.05)); border: 1px solid rgba(255, 140, 0, 0.3); color: #fff; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(255, 140, 0, 0.1);}
+        .msg-ai { align-self: flex-start; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #e5e5ea; border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);}
 
-        @keyframes spin-slow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes spin-fast { 0% { transform: rotate(0deg) scale(1.1); } 100% { transform: rotate(360deg) scale(1.1); } }
-        @keyframes ripple-out { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } }
+        /* 🎛️ Controls */
+        .control-area { padding: 25px; background: rgba(5, 5, 10, 0.7); border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; align-items: center; gap: 15px;}
+        
+        .mic-btn { 
+            background: linear-gradient(135deg, #2a2a35, #1a1a25); 
+            border: 2px solid rgba(255, 255, 255, 0.1); 
+            color: #fff; 
+            border-radius: 50%; 
+            width: 80px; 
+            height: 80px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .mic-btn:hover { transform: scale(1.05); border-color: rgba(255, 140, 0, 0.5); }
+        .mic-btn.recording { 
+            background: linear-gradient(135deg, #ff4b4b, #ff0000); 
+            border-color: #ff4b4b;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+            animation: pulse-red 1.5s infinite;
+        }
+        .mic-btn.processing {
+            background: linear-gradient(135deg, #ff8c00, #ffa500);
+            border-color: #ff8c00;
+            box-shadow: 0 0 30px rgba(255, 140, 0, 0.4);
+            animation: spin-pulse 2s infinite linear;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
 
-        .subtitles-wrapper {
-            position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 650px; text-align: center; opacity: 0; visibility: hidden; transition: all 0.4s ease; z-index: 20;
-        }
-        .subtitles-wrapper.visible { opacity: 1; visibility: visible; }
-        .subtitle-text {
-            background: rgba(20, 20, 20, 0.7); padding: 18px 28px; border-radius: 24px;
-            backdrop-filter: blur(15px); font-size: 1.15rem; line-height: 1.6; color: #f5f5f7; border: 1px solid rgba(255, 255, 255, 0.1);
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(255, 0, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
         }
 
-        .controls-bar {
-            position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; z-index: 30;
-            background: rgba(30, 30, 35, 0.7); padding: 12px 24px; border-radius: 50px;
-            backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1);
+        @keyframes spin-pulse {
+            0% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 140, 0, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 140, 0, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 140, 0, 0.5); }
         }
-        .control-btn {
-            background: transparent; color: white; border: none; padding: 12px; border-radius: 50%; cursor: pointer;
-            transition: all 0.3s; display: flex; justify-content: center; align-items: center;
-        }
-        .control-btn:hover { background: rgba(255, 255, 255, 0.15); transform: scale(1.1); }
-        .control-btn.active-pause { color: #ffb347; background: rgba(255, 179, 71, 0.15); }
-        .control-btn.end-call { color: #ef4444; background: rgba(239, 68, 68, 0.15); }
-        .control-btn.end-call:hover { background: rgba(239, 68, 68, 0.3); }
 
-        .hidden-force { display: none !important; }
+        .status-text {
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            height: 24px;
+            transition: opacity 0.3s;
+        }
+
+        .clear-btn {
+            background: transparent;
+            color: gray;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .clear-btn:hover { color: #ff4b4b; }
+
     </style>
 </head>
-<body class="flex flex-col relative">
+<body>
 
-    <div id="welcome-screen">
-        <div class="mb-10 relative">
-            <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_0_20px_rgba(255,140,0,0.6)]">
-                <circle cx="50" cy="50" r="48" stroke="url(#paint0_linear)" stroke-opacity="0.3" stroke-width="2"/>
-                <circle cx="50" cy="50" r="38" stroke="url(#paint0_linear)" stroke-opacity="0.6" stroke-width="1.5" stroke-dasharray="4 6" class="animate-spin" style="animation-duration: 15s;"/>
-                <path d="M25 50 C 35 20, 65 80, 75 50" stroke="white" stroke-width="4" stroke-linecap="round"/>
-                <path d="M25 50 C 35 80, 65 20, 75 50" stroke="#ff8c00" stroke-width="4" stroke-linecap="round"/>
-                <circle cx="50" cy="50" r="8" fill="white" class="animate-pulse"/>
+    <!-- 🌟 Top Bar -->
+    <header class="w-full p-6 flex justify-between items-center z-10 glass-panel rounded-none border-t-0 border-l-0 border-r-0">
+        <div class="flex items-center gap-4">
+            <svg width="35" height="35" viewBox="0 0 100 100" fill="none">
+                <path d="M50 10 L90 30 L90 70 L50 90 L10 70 L10 30 Z" stroke="url(#orange-grad)" stroke-width="3" fill="rgba(255,140,0,0.1)"/>
+                <circle cx="50" cy="50" r="12" fill="#ff8c00" class="animate-pulse"/>
                 <defs>
-                    <linearGradient id="paint0_linear" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-                        <stop stop-color="#ff8c00"/> <stop offset="1" stop-color="#ffffff"/>
+                    <linearGradient id="orange-grad" x1="0" y1="0" x2="100" y2="100">
+                        <stop offset="0%" stop-color="#ff8c00" />
+                        <stop offset="100%" stop-color="#ffffff" />
                     </linearGradient>
                 </defs>
             </svg>
+            <div>
+                <h1 class="text-xl font-extrabold tracking-[0.15em] uppercase glow-text m-0">वेदिका LIVE</h1>
+                <p class="text-[10px] tracking-widest text-gray-400 uppercase font-bold m-0 mt-1">Pioneered by Divy Patel • Bharat 🇮🇳</p>
+            </div>
         </div>
-        <h1 class="text-4xl md:text-6xl font-bold mb-12 glow-text-white text-center px-4 tracking-tight">
-            Introducing the New<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-white">Vedika Live</span>
-        </h1>
-        <button id="start-now-btn" class="btn-premium">
-            Start Now <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </button>
-        <p class="absolute bottom-8 text-[10px] tracking-[0.3em] text-gray-500 uppercase font-bold">Pioneered by Divy Patel • Bharat 🇮🇳</p>
-    </div>
-
-    <header class="w-full p-6 flex justify-between items-center z-10">
-        <div class="flex items-center gap-3">
-            <svg width="24" height="24" viewBox="0 0 100 100" fill="none" class="opacity-90">
-                <circle cx="50" cy="50" r="40" stroke="white" stroke-width="6"/>
-                <circle cx="50" cy="50" r="15" fill="#ff8c00"/>
-            </svg>
-            <span class="text-sm font-bold tracking-[0.2em] uppercase text-gray-300">Vedika</span>
-        </div>
-        <div class="flex gap-4 items-center">
-            <button id="clear-memory-btn" class="text-[10px] uppercase tracking-wider text-red-400 hover:text-red-300 transition-colors" title="Clear Context Memory">
-                Clear Memory
-            </button>
-            <button id="toggle-subtitles-btn" class="text-xs uppercase tracking-wider text-gray-400 border border-gray-600 rounded-full px-5 py-2 hover:text-white hover:border-white transition-colors">
-                Show Subtitles
-            </button>
+        <div id="connection-status" class="text-xs font-bold text-orange-400 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-orange-400 animate-pulse"></span> Connecting API...
         </div>
     </header>
 
-    <main class="flex-1 flex flex-col justify-center items-center z-10 relative w-full h-full">
-        <div class="orb-container">
-            <div id="vedika-orb" class="orb-wrapper"><div class="orb-fluid"></div><div class="orb-overlay"></div></div>
-            <div id="vedika-ripple" class="orb-ripple"></div>
-        </div>
-        <div id="orb-status" class="mt-12 text-xs uppercase tracking-[0.4em] text-gray-500 font-bold transition-all">Standby</div>
-
-        <div id="subtitles-container" class="subtitles-wrapper">
-            <div id="subtitle-content" class="subtitle-text">Waiting for voice input...</div>
-        </div>
+    <!-- 💬 Chat Area -->
+    <main id="chat-container" class="chat-container">
+        <!-- Messages will appear here -->
     </main>
 
-    <div id="standby-controls" class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-        <button id="go-live-btn" class="btn-premium pointer-events-auto mt-64">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
-            Go Live
-        </button>
-    </div>
+    <!-- 🎛️ Bottom Control Area -->
+    <footer class="control-area z-10">
+        
+        <!-- Status Text (Thinking -> Analyzing -> Generating) -->
+        <div id="status-text" class="status-text text-orange-400 opacity-0"></div>
 
-    <div id="live-controls" class="controls-bar hidden-force">
-        <button id="pause-live-btn" class="control-btn" title="Pause Live">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        <!-- Big Mic Button -->
+        <button id="mic-btn" class="mic-btn" title="Hold or Click to Speak">
+            <svg id="mic-icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="22"></line>
+            </svg>
         </button>
-        <button id="end-live-btn" class="control-btn end-call" title="End Live">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-7-7 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="23" y1="1" x2="1" y2="23"/></svg>
-        </button>
-    </div>
+        
+        <p class="text-gray-500 text-xs tracking-wider">टैप करें और बोलें</p>
 
-    <audio id="vedika-audio" hidden></audio>
+        <button id="clear-btn" class="clear-btn mt-2">🗑️ स्मृति मिटाएं (Clear Memory)</button>
 
+        <!-- Hidden Audio Player for Autoplay -->
+        <audio id="audio-player" class="hidden" autoplay></audio>
+    </footer>
+
+    <!-- 🛠️ Core Logic -->
     <script type="module">
         import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
 
-        const welcomeScreen = document.getElementById('welcome-screen');
-        const startNowBtn = document.getElementById('start-now-btn');
-        const orbWrapper = document.getElementById('vedika-orb');
-        const orbStatus = document.getElementById('orb-status');
-        const goLiveBtn = document.getElementById('go-live-btn');
-        const standbyControls = document.getElementById('standby-controls');
-        const liveControls = document.getElementById('live-controls');
-        const pauseLiveBtn = document.getElementById('pause-live-btn');
-        const endLiveBtn = document.getElementById('end-live-btn');
-        const toggleSubtitlesBtn = document.getElementById('toggle-subtitles-btn');
-        const clearMemoryBtn = document.getElementById('clear-memory-btn');
-        const subtitlesContainer = document.getElementById('subtitles-container');
-        const subtitleContent = document.getElementById('subtitle-content');
-        const audioPlayer = document.getElementById('vedika-audio');
+        // UI Elements
+        const micBtn = document.getElementById('mic-btn');
+        const statusText = document.getElementById('status-text');
+        const chatContainer = document.getElementById('chat-container');
+        const audioPlayer = document.getElementById('audio-player');
+        const connectionStatus = document.getElementById('connection-status');
+        const clearBtn = document.getElementById('clear-btn');
 
-        let gradioClient = null;
-        let isLiveActive = false, isPaused = false, showSubtitles = false;
-        let audioContext, analyser, microphone, scriptProcessor, mediaRecorder;
+        // State
+        let client;
+        let isRecording = false;
+        let mediaRecorder;
         let audioChunks = [];
-        let isUserSpeaking = false, isVedikaSpeaking = false;
-        let silenceTimer = null;
+        let statusInterval;
+        
+        // 🧠 Persistent History (Local Storage)
+        let chatHistory = JSON.parse(localStorage.getItem('vedikaHistory')) || [];
 
-        // 🧠 LOCAL STORAGE CACHE (Memory)
-        let vedikaMemory = localStorage.getItem('vedika_chat_memory') || "";
+        // Loading Animation Stages
+        const thinkingStages = [
+            "वेदिका सोच रही है...", 
+            "विषय का विश्लेषण कर रही है...", 
+            "प्रतिक्रिया उत्पन्न कर रही है..."
+        ];
 
-        // Welcome Screen Cache
-        if (localStorage.getItem('vedikaWelcomeSeen') === 'true') welcomeScreen.style.display = 'none';
-        startNowBtn.addEventListener('click', () => {
-            welcomeScreen.style.opacity = '0';
-            setTimeout(() => { welcomeScreen.style.display = 'none'; localStorage.setItem('vedikaWelcomeSeen', 'true'); }, 800);
-        });
-
-        // Tab Protection (Security Bug Fix)
-        document.addEventListener("visibilitychange", () => {
-            if (document.hidden) {
-                if (!audioPlayer.paused) { audioPlayer.pause(); audioPlayer.currentTime = 0; }
-                if (isLiveActive && !isPaused) { pauseLiveBtn.click(); updateSubtitle("Session auto-paused for background privacy.", "System:"); }
-            }
-        });
-
-        // Clear Memory Logic
-        clearMemoryBtn.addEventListener('click', () => {
-            localStorage.removeItem('vedika_chat_memory');
-            vedikaMemory = "";
-            alert("Memory Cleared! Context has been reset.");
-        });
-
-        // Connect Client
-        async function initClient() {
+        // --- 1. Initialize API Connection ---
+        async function initAPI() {
             try {
-                orbStatus.innerText = "Connecting...";
-                gradioClient = await Client.connect("pateltraders55455/TTS");
-                orbStatus.innerText = "Standby";
-            } catch (err) {
-                orbStatus.innerText = "Connection Failed";
-                console.error("Connection error:", err);
-            }
-        }
-        initClient();
-
-        toggleSubtitlesBtn.addEventListener('click', () => {
-            showSubtitles = !showSubtitles;
-            if (showSubtitles) {
-                subtitlesContainer.classList.add('visible');
-                toggleSubtitlesBtn.innerText = "Hide Subtitles"; toggleSubtitlesBtn.classList.replace('text-gray-400', 'text-white');
-            } else {
-                subtitlesContainer.classList.remove('visible');
-                toggleSubtitlesBtn.innerText = "Show Subtitles"; toggleSubtitlesBtn.classList.replace('text-white', 'text-gray-400');
-            }
-        });
-
-        function updateSubtitle(text, prefix = "") {
-            if (text) {
-                const prefixColor = prefix === "Vedika:" ? "text-orange-400" : "text-gray-400";
-                subtitleContent.innerHTML = `<span class="font-bold ${prefixColor}">${prefix}</span> ${text}`;
-            }
-        }
-
-        // --- 🚀 LIGHTNING FAST VAD ENGINE ---
-        async function startVAD() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioContext.createAnalyser();
-                microphone = audioContext.createMediaStreamSource(stream);
-                scriptProcessor = audioContext.createScriptProcessor(2048, 1, 1);
-
-                analyser.smoothingTimeConstant = 0.8; analyser.fftSize = 1024;
-                microphone.connect(analyser); analyser.connect(scriptProcessor); scriptProcessor.connect(audioContext.destination);
-
-                mediaRecorder = new MediaRecorder(stream);
-                mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
-                mediaRecorder.onstop = sendAudioToBackend;
-
-                scriptProcessor.onaudioprocess = function() {
-                    if (isPaused || isVedikaSpeaking || !isLiveActive) {
-                        if (!isVedikaSpeaking && !orbWrapper.className.includes('processing')) orbWrapper.style.transform = `scale(1)`;
-                        return;
-                    }
-
-                    const array = new Uint8Array(analyser.frequencyBinCount);
-                    analyser.getByteFrequencyData(array);
-                    let values = 0; for (let i = 0; i < array.length; i++) values += array[i];
-                    const averageVolume = values / array.length;
-
-                    if (isUserSpeaking) {
-                        const scale = 1 + (averageVolume / 100); 
-                        orbWrapper.style.transform = `scale(${Math.min(scale, 1.4)})`; 
-                    }
-
-                    if (averageVolume > 15) {
-                        if (!isUserSpeaking) {
-                            isUserSpeaking = true; audioChunks = []; mediaRecorder.start();
-                            orbWrapper.className = "orb-wrapper"; orbStatus.innerText = "Listening...";
-                            updateSubtitle("...", "You:");
-                        }
-                        clearTimeout(silenceTimer);
-                        // ⚡ FAST RESPONSE (700ms silence detection)
-                        silenceTimer = setTimeout(handleSilence, 700);
-                    }
-                };
-            } catch (err) { alert("Microphone access is required."); endLive(); }
-        }
-
-        function handleSilence() {
-            if (isUserSpeaking && !isVedikaSpeaking && !isPaused && isLiveActive) {
-                isUserSpeaking = false;
-                orbWrapper.style.transform = `scale(1)`; 
-                orbWrapper.className = "orb-wrapper processing";
-                orbStatus.innerText = "Processing...";
-                updateSubtitle("Analyzing the command...", "System:");
-                mediaRecorder.stop();
-            }
-        }
-
-        function stopVAD() {
-            if (scriptProcessor) scriptProcessor.disconnect(); if (analyser) analyser.disconnect();
-            if (microphone) microphone.disconnect(); if (audioContext) audioContext.close();
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
-        }
-
-        // --- 🧠 SECURE BACKEND CONNECTION ---
-        async function sendAudioToBackend() {
-            if (!gradioClient || audioChunks.length === 0) return;
-            
-            isVedikaSpeaking = true; 
-            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-            const audioFile = new File([audioBlob], "live_input.wav", { type: 'audio/wav' });
-
-            try {
-                // We send both Audio and the Memory state (vedikaMemory)
-                const payload = { audio_filepath: audioFile };
+                // Connecting to your specified Hugging Face space
+                client = await Client.connect("pateltraders55455/Vedika-music-preview");
+                connectionStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-green-500"></span> System Online`;
+                connectionStatus.className = "text-xs font-bold text-green-500 uppercase tracking-wider flex items-center gap-2";
                 
-                // Safe check: If your backend has the memory parameter, we send it.
-                // Otherwise Gradio client handles it gracefully.
-                try { payload.chat_memory = vedikaMemory; } catch(e){}
+                // Render existing history
+                renderHistory();
+            } catch (error) {
+                console.error("Connection Failed:", error);
+                connectionStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500"></span> Connection Failed`;
+                connectionStatus.className = "text-xs font-bold text-red-500 uppercase tracking-wider flex items-center gap-2";
+            }
+        }
+        initAPI();
 
-                const submission = gradioClient.submit("/process_all_in_one", payload);
+        // --- 2. UI Functions ---
+        function appendMessage(role, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${role === 'user' ? 'msg-user' : 'msg-ai'}`;
+            // Simple formatting for bold text
+            let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            msgDiv.innerHTML = formattedText;
+            chatContainer.appendChild(msgDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
 
-                for await (const msg of submission) {
-                    if (msg.type === "data" && isLiveActive && !isPaused) {
-                        const outputData = msg.data;
-                        const audioResult = outputData[0];
-                        const textLog = outputData[1];
+        function renderHistory() {
+            chatContainer.innerHTML = '';
+            if (chatHistory.length === 0) {
+                appendMessage('ai', "प्रणाम आदरणीय दिव्य जी! मैं वेदिका हूँ। भारत माता की जय! बताइए आज मैं आपकी क्या सहायता करूँ?");
+            } else {
+                chatHistory.forEach(msg => {
+                    appendMessage(msg.role, msg.content);
+                });
+            }
+        }
+
+        function startThinkingAnimation() {
+            let i = 0;
+            statusText.innerText = thinkingStages[0];
+            statusText.style.opacity = "1";
+            micBtn.classList.add('processing');
+            
+            statusInterval = setInterval(() => {
+                i = (i + 1) % thinkingStages.length;
+                statusText.innerText = thinkingStages[i];
+            }, 1800); // Changes text every 1.8 seconds
+        }
+
+        function stopThinkingAnimation() {
+            clearInterval(statusInterval);
+            statusText.style.opacity = "0";
+            micBtn.classList.remove('processing');
+        }
+
+        // --- 3. Audio Recording & Processing ---
+        micBtn.addEventListener('click', async () => {
+            if (!client) {
+                alert("कृपया सर्वर कनेक्ट होने की प्रतीक्षा करें...");
+                return;
+            }
+
+            if (isRecording) {
+                // Stop Recording
+                mediaRecorder.stop();
+                isRecording = false;
+                micBtn.classList.remove('recording');
+            } else {
+                // Start Recording
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = e => {
+                        if (e.data.size > 0) audioChunks.push(e.data);
+                    };
+
+                    mediaRecorder.onstop = async () => {
+                        // Stop all tracks to release microphone
+                        stream.getTracks().forEach(track => track.stop());
                         
-                        // Robust memory handling in case backend doesn't send it back
-                        const updatedMemory = outputData.length > 2 ? outputData[2] : null;
+                        // Create Blob
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        
+                        // Start API Request
+                        await sendToVedika(audioBlob);
+                    };
 
-                        const parts = textLog ? textLog.split("🔱 वेदिका:") : [];
-                        if (parts.length > 1) updateSubtitle(parts[1].trim(), "Vedika:");
+                    mediaRecorder.start();
+                    isRecording = true;
+                    micBtn.classList.add('recording');
+                    statusText.innerText = "सुन रही हूँ...";
+                    statusText.style.opacity = "1";
 
-                        if (audioResult) {
-                            if(updatedMemory) {
-                                vedikaMemory = updatedMemory;
-                                localStorage.setItem('vedika_chat_memory', vedikaMemory);
-                            }
+                } catch (err) {
+                    console.error("Mic Error:", err);
+                    alert("माइक्रोफ़ोन की अनुमति आवश्यक है।");
+                }
+            }
+        });
 
-                            orbWrapper.className = "orb-wrapper speaking";
-                            orbStatus.innerText = "Speaking...";
-                            
-                            audioPlayer.src = audioResult.url || audioResult;
-                            audioPlayer.play();
-                            
-                            audioPlayer.onended = () => {
-                                if (isLiveActive && !isPaused) {
-                                    isVedikaSpeaking = false;
-                                    orbWrapper.className = "orb-wrapper"; orbWrapper.style.transform = `scale(1)`;
-                                    orbStatus.innerText = "Active"; updateSubtitle("Waiting for voice input...");
-                                }
-                            };
+        // --- 4. API Communication ---
+        async function sendToVedika(audioBlob) {
+            startThinkingAnimation();
+
+            try {
+                // The exact call provided by you
+                const result = await client.predict("/process_all_in_one", {
+                    audio_filepath: audioBlob,
+                    history: chatHistory,
+                });
+
+                // Assuming result.data gives [audio_url, formatted_text_log, new_history] based on python backend
+                const data = result.data;
+                
+                if (data && data.length >= 3) {
+                    const audioUrl = data[0]; // Can be URL or object {url: string}
+                    const textLog = data[1];
+                    const newHistory = data[2];
+
+                    // Play Audio
+                    if (audioUrl) {
+                        if (typeof audioUrl === 'object' && audioUrl.url) {
+                            audioPlayer.src = audioUrl.url;
+                        } else {
+                            audioPlayer.src = audioUrl;
                         }
+                        audioPlayer.play();
+                    }
+
+                    // Update History State & LocalStorage
+                    if (newHistory && Array.isArray(newHistory)) {
+                        chatHistory = newHistory;
+                        localStorage.setItem('vedikaHistory', JSON.stringify(chatHistory));
+                        renderHistory();
                     }
                 }
+
             } catch (error) {
-                console.error(error); orbStatus.innerText = "Error"; isVedikaSpeaking = false;
-                orbWrapper.className = "orb-wrapper"; updateSubtitle("Connection error occurred.", "System:");
+                console.error("API Error:", error);
+                appendMessage('ai', "क्षमा करें आदरणीय दिव्य जी, तकनीकी बाधा के कारण मैं उत्तर नहीं ला सकी।");
+            } finally {
+                stopThinkingAnimation();
             }
         }
 
-        goLiveBtn.addEventListener('click', () => {
-            if (!gradioClient) return alert("Server not connected.");
-            isLiveActive = true; isPaused = false;
-            standbyControls.classList.add('hidden-force'); liveControls.classList.remove('hidden-force');
-            orbWrapper.className = "orb-wrapper"; orbStatus.innerText = "Active";
-            updateSubtitle("Live session started. Start speaking...");
-            startVAD();
-        });
-
-        pauseLiveBtn.addEventListener('click', () => {
-            isPaused = !isPaused;
-            if (isPaused) {
-                pauseLiveBtn.classList.add('active-pause');
-                pauseLiveBtn.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
-                orbWrapper.className = "orb-wrapper"; orbWrapper.style.transform = `scale(1)`;
-                orbStatus.innerText = "Paused"; audioPlayer.pause(); updateSubtitle("Session paused. Press play to resume.", "System:");
-            } else {
-                pauseLiveBtn.classList.remove('active-pause');
-                pauseLiveBtn.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
-                orbStatus.innerText = "Active"; if (!isVedikaSpeaking) updateSubtitle("Waiting for voice input...");
+        // --- 5. Clear Memory Functionality ---
+        clearBtn.addEventListener('click', () => {
+            if(confirm("क्या आप सुनिश्चित हैं कि आप पिछली सभी बातें मिटाना चाहते हैं?")) {
+                chatHistory = [];
+                localStorage.removeItem('vedikaHistory');
+                renderHistory();
             }
         });
 
-        endLiveBtn.addEventListener('click', () => {
-            isLiveActive = false; isVedikaSpeaking = false; stopVAD(); audioPlayer.pause();
-            liveControls.classList.add('hidden-force'); standbyControls.classList.remove('hidden-force');
-            orbWrapper.className = "orb-wrapper"; orbWrapper.style.transform = `scale(1)`;
-            orbStatus.innerText = "Standby"; updateSubtitle("Session ended.", "System:");
-            isPaused = false; pauseLiveBtn.classList.remove('active-pause');
-            pauseLiveBtn.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
-        });
     </script>
 </body>
 </html>
